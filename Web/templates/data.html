@@ -1,0 +1,27 @@
+{% extends 'base.html'%} {% block title %} Datos {% endblock %} {% block content %}
+<div class="container mt-5 mb-5 px-10 ">
+	<div class="col-md-6 offset-md-3 text-center">
+		<h2>Datos</h2><br>
+			<table class="table table-secondary table-hover">
+				<thead>
+					<tr>
+						<th scope="col">Fecha</th>
+						<th scope="col">Usuario</th>
+						<th scope="col">Archivo</th>
+						<th scope="col">Version</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for d in data %}
+					<tr>
+						<td>{{ d['date'] }}</td>
+						<td>{{ d['user'] }}</td>
+						<td>{{ d['filename'] }}</td>
+						<td>{{ d['version'] }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+	</div>
+</div>
+{% endblock %}
