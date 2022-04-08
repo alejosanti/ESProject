@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.3";
+const char* version = "v3.0.1";
 bool updateIsOk = true;
 
 /*
@@ -34,7 +34,7 @@ void UpdateFile(){
   /*
    *incia la carga del archivo y si hay un error en la subida o conexión se imprime el error
    */
-  
+  Serial.printf("pre");
   t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
   
     switch (ret) {

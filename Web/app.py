@@ -16,6 +16,13 @@ ALLOWED_EXTENSIONS = set(['bin'])
 def land():
     return render_template('login.html')
 
+@app.route('/github-webhook', methods=['POST', 'GET'])
+def github_webhook():
+    print("\nLlego un github webhook\n")
+    print(request.form)
+    print()
+    return render_template('login.html')
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     message = 'Por favor ingrese a su cuenta.'
