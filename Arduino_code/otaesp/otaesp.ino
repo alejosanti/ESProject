@@ -5,7 +5,7 @@
 #include "index.h"
 
 /*
- * usuario y contraseña par ala conexión al ESP en modo AP
+ * usuario y contrasenia par ala conexión al ESP en modo AP
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
@@ -19,22 +19,22 @@ bool updateIsOk = true;
 WebServer server(80);
 
 /*
- * función encargada de realizar el upload
+ * funcion encargada de realizar el upload
  */
 void UpdateFile(){
   WiFiClient client;
   /*
-   *Se permiten las redirecciones enviadas en el headder para la librería httpUpdate
+   *Se permiten las redirecciones enviadas en el headder para la libreria httpUpdate
    */
   httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
   /*
-   *Se configura la librería para que la actualización del firmware no reinicie el ESP
+   *Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
    */
   httpUpdate.rebootOnUpdate(false);
   /*
-   *incia la carga del archivo y si hay un error en la subida o conexión se imprime el error
+   *incia la carga del archivo y si hay un error en la subida o conexion se imprime el error
+    Serial.printf("pre");
    */
-  Serial.printf("pre");
   t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
   
     switch (ret) {
