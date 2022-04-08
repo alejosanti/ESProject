@@ -17,7 +17,7 @@ mongo = PyMongo(app)
 github_token = ''
 username = 'alejosanti'
 repository_name = 'ESProject'
-file_path = 'Arduino_code/otaesp/otaesp.ino.nodemcu-32s.bin'
+file_path = 'Arduino_code/otaesp/otaesp.ino'
 
 @app.route('/github-webhook', methods=["POST"])
 def land():
@@ -39,15 +39,14 @@ def github_read_file(username, repository_name, file_path, github_token=None):
     file_content = data['content']
     file_content_encoding = data.get('encoding')
     if file_content_encoding == 'base64':
-        file_content = base64.b64decode(file_content)
+        file_content = base64.b64decode(file_content).decode()
 
-    print(data)
-    print("\n\n\nImprimiendo data[name]\n")
     # data = json.loads(file_content)
-    print(data['name'])
-    print("\n\n\nEl contenido del archivo es \n")
-    print(file_content[0:50])
-    print("\n\n\n")
+
+    file = open(r"C:/Users/Ale/Desktop/otaesp.ino", "a")
+    file.write(file_content)
+    file.close()
+
     return file_content
     
 if __name__ == "__main__":
