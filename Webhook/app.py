@@ -23,8 +23,9 @@ file_path = 'Arduino_code/otaesp/otaesp.ino'
 def land():
     print("\nLlego un github webhook\n")
     print()
-    github_read_file(username, repository_name, file_path, github_token)
-    requests.get('http://192.168.4.2:5000/github-webhook')
+    file = github_read_file(username, repository_name, file_path, github_token)
+    data = {'file': file}
+    requests.post('http://192.168.4.2:5000/github-webhook', data = data)
     return "Done"
 
 def github_read_file(username, repository_name, file_path, github_token=None):
@@ -40,12 +41,6 @@ def github_read_file(username, repository_name, file_path, github_token=None):
     file_content_encoding = data.get('encoding')
     if file_content_encoding == 'base64':
         file_content = base64.b64decode(file_content).decode()
-
-    # data = json.loads(file_content)
-
-    file = open(r"C:/Users/Ale/Desktop/otaesp.ino", "a")
-    file.write(file_content)
-    file.close()
 
     return file_content
     

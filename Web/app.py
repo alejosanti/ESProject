@@ -9,6 +9,7 @@ app.secret_key = "otawebapp"
 app.config['MONGO_URI']='mongodb://localhost:27017/otadata'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 mongo = PyMongo(app)
+placa = "esp32:esp32:nodemcu-32s"
 
 ALLOWED_EXTENSIONS = set(['bin'])
 
@@ -16,11 +17,16 @@ ALLOWED_EXTENSIONS = set(['bin'])
 def land():
     return render_template('login.html')
 
-@app.route('/github-webhook', methods=['POST', 'GET'])
+@app.route('/github-webhook', methods=['POST'])
 def github_webhook():
-    print("\nLlego un github webhook\n")
-    print(request.form)
-    print()
+    print("\nLlego un codigo de Github\n")
+    if request.method == 'POST':
+        file_content = request.form.get('file')
+        file = open(r"./CodeFromGithub/otaesp/otaesp.ino", "w")
+        file.write(file_content)
+        file.close()
+        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
+
     return render_template('login.html')
 
 @app.route('/login', methods=['POST', 'GET'])
