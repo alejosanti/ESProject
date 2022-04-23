@@ -53,10 +53,7 @@ def github_webhook():
                 fileWriter.write(file_content)
                 fileWriter.close()
 
-        # fileWriter = open(r"./CodeFromGithub", "w")
-        # fileWriter.write(inoFile)
-        # fileWriter.close()
-        # os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
+        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
 
     return render_template('login.html')
 
