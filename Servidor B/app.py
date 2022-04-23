@@ -51,6 +51,7 @@ def github_read_file(username, repository_name, tree_sha, github_token=None):
             r.raise_for_status()
             file_data = r.json()
             file['content'] = file_data['content']
+            print("\nContenido del archivo: \n" + file['content'])
             file['encoding'] = file_data['encoding']
 
     return {"files" : data['tree']}
