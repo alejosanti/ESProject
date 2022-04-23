@@ -7,7 +7,7 @@
 /*
  * usuario y contrasenia par ala conexion al ESP en modo AP
  */
-const char* ssid = "ESP32_AP ";
+const char* ssid = "ESP32_AP";
 const char* password = "123456789";
 const char* version = "v3.0.0";
 bool updateIsOk = true;
