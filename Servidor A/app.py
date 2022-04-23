@@ -1,5 +1,7 @@
+from logging.config import fileConfig
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_pymongo import PyMongo
+import base64
 import datetime, bcrypt, requests, os, time
 
 UPLOAD_FOLDER = 'static/uploads/'
@@ -21,11 +23,40 @@ def land():
 def github_webhook():
     print("\nLlego un codigo de Github\n")
     if request.method == 'POST':
-        file_content = request.form.get('file')
-        file = open(r"./CodeFromGithub/otaesp/otaesp.ino", "w")
-        file.write(file_content)
-        file.close()
-        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
+        files = request.json['files']
+
+        print(files)
+
+        for file in files:
+            if file['type'] == 'blob':
+
+                # Decodificando contenido
+                file_content = file['content']
+                file_content_encoding = file['encoding']
+                if file_content_encoding == 'base64':
+                    file_content = base64.b64decode(file_content).decode()
+                
+                # Guardando path del archivo
+                file_path = ("CodeFromGithub/" + file['path']).replace("/", os.sep)
+                
+                # Guardando path del directorio
+                dir_path = file_path.split(os.sep)
+                dir_path = dir_path[:-1]
+                dir_path = os.sep.join(dir_path)
+                                
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+
+                print("\nWritting on:")
+                print(file_path)
+                fileWriter = open(file_path, "w")
+                fileWriter.write(file_content)
+                fileWriter.close()
+
+        # fileWriter = open(r"./CodeFromGithub", "w")
+        # fileWriter.write(inoFile)
+        # fileWriter.close()
+        # os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
 
     return render_template('login.html')
 

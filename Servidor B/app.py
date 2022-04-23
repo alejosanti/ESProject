@@ -17,33 +17,46 @@ mongo = PyMongo(app)
 github_token = ''
 username = 'alejosanti'
 repository_name = 'ESProject'
-file_path = 'Arduino_code/otaesp/otaesp.ino'
+file_path = ''
+# file_path = 'Arduino_code'
+
 
 @app.route('/github-webhook', methods=["POST"])
 def land():
     print("\nLlego un github webhook\n")
     print()
-    file = github_read_file(username, repository_name, file_path, github_token)
-    data = {'file': file}
-    requests.post('http://192.168.4.2:5000/github-webhook', data = data)
+    # file = github_read_file(username, repository_name, file_path, github_token)
+    tree_sha = "05c097d048f8f3264c011095a391392f1b8d58e1"
+    files = github_read_file(username, repository_name, tree_sha, github_token)
+    requests.post('http://192.168.4.2:5000/github-webhook', json = files)
     return "Done"
 
-def github_read_file(username, repository_name, file_path, github_token=None):
+# def github_read_file(username, repository_name, file_path, github_token=None):
+def github_read_file(username, repository_name, tree_sha, github_token=None):
     headers = {}
     if github_token:
         headers['Authorization'] = f"token {github_token}"
         
-    url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{file_path}'
+    url = f'https://api.github.com/repos/{username}/{repository_name}/git/trees/{tree_sha}?recursive=1'
+
+    # url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{file_path}'
     r = requests.get(url, headers=headers)
     r.raise_for_status()
     data = r.json()
-    file_content = data['content']
-    file_content_encoding = data.get('encoding')
-    if file_content_encoding == 'base64':
-        file_content = base64.b64decode(file_content).decode()
 
-    return file_content
+    # Agregando los bytes correspondientes al contenido real de los archivos y su codificacion
+    for file in data['tree']:
+        if file['type'] == 'blob':
+            print("\nObteniendo archivo: " + file['path'])
+            r = requests.get(file['url'], headers=headers)
+            r.raise_for_status()
+            file_data = r.json()
+            file['content'] = file_data['content']
+            file['encoding'] = file_data['encoding']
+
+    return {"files" : data['tree']}
     
 if __name__ == "__main__":
     app.run(host='192.168.0.2', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
-    github_token = os.environ['GITHUB_TOKEN']
+    github_token = os.environ.get('GITHUB_TOKEN')
+    print("\nGITHUB TOKEN = " + github_token + "\n")
