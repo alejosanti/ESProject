@@ -49,7 +49,6 @@ def github_webhook():
 
                 print("\nWritting on:")
                 print(file_path)
-                print(file_content)
                 fileWriter = open(file_path, "w")
                 fileWriter.write(file_content)
                 fileWriter.close()
