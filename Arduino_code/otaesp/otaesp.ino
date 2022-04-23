@@ -19,7 +19,7 @@ bool updateIsOk = true;
 WebServer server(80);
 
 /*
- * funcion encargada de realizar el upload
+ * funcion encaaaargada de realizar el upload
  */
 void UpdateFile(){
   WiFiClient client;
