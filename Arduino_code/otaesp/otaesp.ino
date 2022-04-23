@@ -5,7 +5,7 @@
 #include "index.h"
 
 /*
- * usuario y contrasenia par ala conexión al ESP en modo AP
+ * usuario y contrasenia par ala conexion al ESP en modo AP
  */
 const char* ssid = "ESP32_AP ";
 const char* password = "123456789";
