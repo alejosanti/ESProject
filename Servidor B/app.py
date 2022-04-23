@@ -47,7 +47,7 @@ def github_read_file(username, repository_name, tree_sha, github_token=None):
     for file in data['tree']:
         if file['type'] == 'blob':
             print("\nObteniendo archivo: " + file['path'])
-            path = "/Arduino_code" + file['path']
+            path = "Arduino_code/" + file['path']
             url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{path}'
             r = requests.get(url, headers=headers)
             r.raise_for_status()
