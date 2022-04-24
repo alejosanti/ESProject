@@ -153,6 +153,8 @@ def post_data():
         
         binPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
         binPath = binPath.replace("/", os.sep)
+        print("El binpath es: ")
+        print(binPath)
         binForUpdate = open(binPath, "w")
         binForUpdate.write(binario.read())
         
