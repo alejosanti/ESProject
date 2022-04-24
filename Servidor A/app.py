@@ -151,7 +151,7 @@ def post_data():
     print("\nEl binpath es:  ")
     print(path)
 
-    binario = open(path, "r")
+    binario = open(path, "r", errors="ignore")
 
     if binario and allowed_file(binario.name):
 
