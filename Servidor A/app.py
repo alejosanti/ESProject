@@ -146,15 +146,16 @@ def show_data():
 
 def post_data():
     path = os.getcwd().join("/CodeFromGithubotaesp/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin")
+    path = path.replace("/", os.sep)
+    print("El binpath es: ")
+    print(path)
+
     binario = open(path, "r")
 
     if binario and allowed_file(binario.name):
 
         
         binPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
-        binPath = binPath.replace("/", os.sep)
-        print("El binpath es: ")
-        print(binPath)
         binForUpdate = open(binPath, "w")
         binForUpdate.write(binario.read())
         
