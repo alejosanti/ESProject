@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.3";
+const char* version = "v3.0.3 ";
 bool updateIsOk = true;
 
 /*

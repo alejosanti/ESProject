@@ -149,10 +149,13 @@ def post_data():
     binario = open(path, "r")
 
     if binario and allowed_file(binario.name):
+
         
         binPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
+        binPath = binPath.replace("/", os.sep)
         binForUpdate = open(binPath, "w")
         binForUpdate.write(binario.read())
+        
 
         response = requests.get('http://192.168.4.1/update').text
         if(response != "update success"):
