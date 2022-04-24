@@ -157,7 +157,7 @@ def post_data():
 
         
         binPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
-        binForUpdate = open(binPath, "w")
+        binForUpdate = open(binPath, "w", encoding="utf8")
         binForUpdate.write(binario.read())
         
 
