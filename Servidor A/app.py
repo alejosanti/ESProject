@@ -54,8 +54,10 @@ def github_webhook():
                 fileWriter.close()
 
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
-
-    return render_template('login.html')
+        for i in range(5):  # try 5 times
+            print("Esperando...")
+            time.sleep(2)
+        post_data()
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -105,20 +107,61 @@ def show_data():
     else:
         return redirect(url_for('login'))
 
-@app.route('/update', methods=['POST'])
+# @app.route('/update', methods=['POST'])
+# def post_data():
+#     user = session['user']
+#     binfile = request.files['binfile']
+#     print("\nBinfile:")
+#     print(binfile)
+#     print()
+#     print("\napp.config['UPLOAD_FOLDER']")
+#     print(app.config['UPLOAD_FOLDER'])
+#     if binfile and allowed_file(binfile.filename):
+#         binfile.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
+#         response = requests.get('http://192.168.4.1/update').text
+#         if(response != "update success"):
+#             message = 'Upload fallido.'
+#             return render_template('update.html', message = message)
+#         else:     
+#             mongo.save_file(binfile.filename, binfile)
+
+#             for i in range(0, 5):  # try 5 times
+#                 print("Ahi va un try")
+#                 try:
+#                     version = requests.get('http://192.168.4.1/version').text
+#                 except Exception:
+#                     pass
+
+#                 if version is None:
+#                     time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
+#                 else:
+#                     break
+                
+#             print("Salio del for")
+#             mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binfile.filename, 'version': version})
+#             return redirect(url_for('show_data'))
+#     else:
+#         message = 'Tipo de archivo inválido, intente nuevamente.'
+#         return render_template('update.html', message = message)
+
 def post_data():
     user = session['user']
-    binfile = request.files['binfile']
-    if binfile and allowed_file(binfile.filename):
-        binfile.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
+    binario = open("CodeFromGithubotaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "r")
+
+    if binario and allowed_file(binario.name):
+        
+        binPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
+        binForUpdate = open(binPath, "w")
+        binForUpdate.write(binario.read())
+
         response = requests.get('http://192.168.4.1/update').text
         if(response != "update success"):
             message = 'Upload fallido.'
             return render_template('update.html', message = message)
         else:     
-            mongo.save_file(binfile.filename, binfile)
+            mongo.save_file(binForUpdate.name, binForUpdate)
 
-            for i in range(0, 5):  # try 5 times
+            for i in range(5):  # try 5 times
                 print("Ahi va un try")
                 try:
                     version = requests.get('http://192.168.4.1/version').text
@@ -131,11 +174,11 @@ def post_data():
                     break
                 
             print("Salio del for")
-            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binfile.filename, 'version': version})
+            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binForUpdate.filename, 'version': version})
             return redirect(url_for('show_data'))
     else:
         message = 'Tipo de archivo inválido, intente nuevamente.'
-        return render_template('update.html', message = message)
+    return render_template('update.html', message = message)
 
 @app.route('/display/firmware.bin')
 def display_image():

@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.3";
+const char* version = "v3.0.0";
 bool updateIsOk = true;
 
 /*
@@ -19,7 +19,7 @@ bool updateIsOk = true;
 WebServer server(80);
 
 /*
- * funcion encaaaargada de realizar el upload
+ * funcion encargada de realizar el upload
  */
 void UpdateFile(){
   WiFiClient client;
