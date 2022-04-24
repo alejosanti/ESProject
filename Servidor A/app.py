@@ -161,6 +161,9 @@ def post_data():
         binForUpdate = open(binPath, "w")
         binario_content = binario.read()
         binForUpdate.write(binario_content)
+
+        print("\nFirmware guardado...")
+        time.sleep(2)
         
 
         response = requests.get('http://192.168.4.1/update').text
