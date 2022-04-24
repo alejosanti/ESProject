@@ -148,7 +148,7 @@ def post_data():
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
-    print("\nEl binpath es: ")
+    print("\nEl binpath es:  ")
     print(path)
 
     binario = open(path, "r")
