@@ -145,7 +145,7 @@ def show_data():
 #         return render_template('update.html', message = message)
 
 def post_data():
-    binario = open("CodeFromGithubotaesp/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "r")
+    binario = open("./CodeFromGithubotaesp/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "r")
 
     if binario and allowed_file(binario.name):
         
