@@ -58,6 +58,7 @@ def github_webhook():
             print("Esperando...")
             time.sleep(2)
         post_data()
+    return redirect(url_for('show_version'))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
