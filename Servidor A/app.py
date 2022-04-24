@@ -146,9 +146,7 @@ def show_data():
 
 def post_data():
     cwd =  os.getcwd()
-    print("\ncwd:")
-    print(os.getcwd())
-    path = os.getcwd().join("/CodeFromGithubotaesp/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin")
+    path = os.path.join(cwd, "/CodeFromGithubotaesp/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin")
     path = path.replace("/", os.sep)
     print("\nEl binpath es: ")
     print(path)
