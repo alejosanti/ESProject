@@ -142,7 +142,7 @@ def show_data():
 #             return redirect(url_for('show_data'))
 #     else:
 #         message = 'Tipo de archivo inválido, intente nuevamente.'
-#         return render_template('update.html', message = message)
+#         return render_template('update.html', message = message) 
 
 def post_data():
     cwd =  os.getcwd()
