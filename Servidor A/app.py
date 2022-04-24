@@ -145,7 +145,6 @@ def show_data():
 #         return render_template('update.html', message = message)
 
 def post_data():
-    user = session['user']
     binario = open("CodeFromGithubotaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "r")
 
     if binario and allowed_file(binario.name):
@@ -174,7 +173,7 @@ def post_data():
                     break
                 
             print("Salio del for")
-            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binForUpdate.filename, 'version': version})
+            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': "a user", 'filename': binForUpdate.filename, 'version': version})
             return redirect(url_for('show_data'))
     else:
         message = 'Tipo de archivo inválido, intente nuevamente.'
