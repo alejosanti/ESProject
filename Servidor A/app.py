@@ -25,7 +25,7 @@ def github_webhook():
     if request.method == 'POST':
 
         files = request.json['files']
-        print(files)
+        # print(files)
 
         # Escribiendo archivos en directorio /CodeFromGithub
         for file in files:
@@ -55,10 +55,16 @@ def github_webhook():
                 fileWriter.close()
 
         # Generando archivo binario
-        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
-        for i in range(5):  # try 5 times
-            print("Esperando...")
-            time.sleep(2)
+        try:
+            print("\nEmpezando compilacion del ino")
+            os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
+            print("\nCompilacion del ino finalizada")
+            for i in range(5):  # try 5 times
+                print("Esperando...")
+                time.sleep(2)
+        except Exception as e:
+            print("\n\n\n\n\n Ocurrió una excepción: \n")
+            print(e)
 
         # Leyendo archivo binario
         """
