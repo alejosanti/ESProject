@@ -23,10 +23,11 @@ def land():
 def github_webhook():
     print("\nLlego un codigo de Github\n")
     if request.method == 'POST':
-        files = request.json['files']
 
+        files = request.json['files']
         print(files)
 
+        # Escribiendo archivos en directorio /CodeFromGithub
         for file in files:
             if file['type'] == 'blob':
 
@@ -53,11 +54,18 @@ def github_webhook():
                 fileWriter.write(file_content)
                 fileWriter.close()
 
+        # Generando archivo binario
+        """
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
         for i in range(5):  # try 5 times
             print("Esperando...")
             time.sleep(2)
+        """
+
+        # Leyendo archivo binario
+        """
         post_data()
+        """
     return redirect(url_for('show_version'))
 
 @app.route('/login', methods=['POST', 'GET'])
