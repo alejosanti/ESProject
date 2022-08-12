@@ -55,12 +55,10 @@ def github_webhook():
                 fileWriter.close()
 
         # Generando archivo binario
-        """
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
         for i in range(5):  # try 5 times
             print("Esperando...")
             time.sleep(2)
-        """
 
         # Leyendo archivo binario
         """
