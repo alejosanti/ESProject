@@ -180,9 +180,11 @@ def post_data():
 
         response = requests.get('http://192.168.4.1/update').text
         if(response != "update success"):
+            print("Update fallido")
             message = 'Upload fallido.'
             return render_template('update.html', message = message)
         else:     
+            print("Exito al actualizar")
             mongo.save_file(binForUpdate.name, binForUpdate)
 
             for i in range(5):  # try 5 times
