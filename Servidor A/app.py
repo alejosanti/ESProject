@@ -59,15 +59,12 @@ def github_webhook():
             print("\nEmpezando compilacion del ino")
             os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
             print("\nCompilacion del ino finalizada")
-            for i in range(5):  # try 5 times
-                print("Esperando...")
-                time.sleep(2)
         except Exception as e:
             print("\n\n\n\n\n Ocurrió una excepción: \n")
             print(e)
 
         # Leyendo archivo binario
-        post_data()
+        post_data_auto()
         
     return redirect(url_for('show_version'))
 
@@ -119,45 +116,44 @@ def show_data():
     else:
         return redirect(url_for('login'))
 
-# @app.route('/update', methods=['POST'])
-# def post_data():
-#     user = session['user']
-#     binfile = request.files['binfile']
-#     print("\nBinfile:")
-#     print(binfile)
-#     print()
-#     print("\napp.config['UPLOAD_FOLDER']")
-#     print(app.config['UPLOAD_FOLDER'])
-#     if binfile and allowed_file(binfile.filename):
-#         binfile.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
-#         response = requests.get('http://192.168.4.1/update').text
-#         if(response != "update success"):
-#             message = 'Upload fallido.'
-#             return render_template('update.html', message = message)
-#         else:     
-#             mongo.save_file(binfile.filename, binfile)
-
-#             for i in range(0, 5):  # try 5 times
-#                 print("Ahi va un try")
-#                 try:
-#                     version = requests.get('http://192.168.4.1/version').text
-#                 except Exception:
-#                     pass
-
-#                 if version is None:
-#                     time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
-#                 else:
-#                     break
-                
-#             print("Salio del for")
-#             mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binfile.filename, 'version': version})
-#             return redirect(url_for('show_data'))
-#     else:
-#         message = 'Tipo de archivo inválido, intente nuevamente.'
-#         return render_template('update.html', message = message)  
-
 @app.route('/update', methods=['POST'])
 def post_data():
+    user = session['user']
+    binfile = request.files['binfile']
+    print("\nBinfile:")
+    print(binfile)
+    print()
+    print("\napp.config['UPLOAD_FOLDER']")
+    print(app.config['UPLOAD_FOLDER'])
+    if binfile and allowed_file(binfile.filename):
+        binfile.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
+        response = requests.get('http://192.168.4.1/update').text
+        if(response != "update success"):
+            message = 'Upload fallido.'
+            return render_template('update.html', message = message)
+        else:     
+            mongo.save_file(binfile.filename, binfile)
+
+            for i in range(0, 5):  # try 5 times
+                print("Ahi va un try")
+                try:
+                    version = requests.get('http://192.168.4.1/version').text
+                except Exception:
+                    pass
+
+                if version is None:
+                    time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
+                else:
+                    break
+                
+            print("Salio del for")
+            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': user, 'filename': binfile.filename, 'version': version})
+            return redirect(url_for('show_data'))
+    else:
+        message = 'Tipo de archivo inválido, intente nuevamente.'
+        return render_template('update.html', message = message)  
+
+def post_data_auto():
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
