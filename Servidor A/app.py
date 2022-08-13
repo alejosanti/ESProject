@@ -67,9 +67,8 @@ def github_webhook():
             print(e)
 
         # Leyendo archivo binario
-        """
         post_data()
-        """
+        
     return redirect(url_for('show_version'))
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -157,6 +156,7 @@ def show_data():
 #         message = 'Tipo de archivo inválido, intente nuevamente.'
 #         return render_template('update.html', message = message)  
 
+@app.route('/update', methods=['POST'])
 def post_data():
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
