@@ -1,3 +1,4 @@
+from urllib import request
 from flask import Flask
 from flask_pymongo import PyMongo
 import requests, os
@@ -100,7 +101,28 @@ def create_binary_file():
         print(e)
 
 def upload_binary_file():
-    # Leyendo el archivo y codificandolo en base64 (para compatibilidad con la API de GitHub)
+    """ 
+        Datos necesarios para subir a GitHub:
+            En la ruta: 
+                -owner --> username
+                -repo --> repository_name
+                -path --> gitPath
+            En el encabezado:
+                -Authorization --> github_token
+            En el cuerpo:
+                -message --> mensaje de commit
+                -content --> contenido del binario en base64
+    """
+    # Datos del header
+    headers = {}
+    if github_token:
+        headers['Authorization'] = f"token {github_token}"
+    
+    # Datos de la ruta
+    gitPath = "Binaries/binario.bin"
+    url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{gitPath}'
+
+    # Datos del cuerpo
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
@@ -109,11 +131,12 @@ def upload_binary_file():
     binario = open(path, "rb", errors="ignore")
     content = base64.b64encode(binario)
     print("\nContenido encriptado en base 64: \n " + content)
-    
-    # Subiendo a GitHub
-    url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{file_name}?recursive=1'
+    data = {"message":"Automatic upload of the binary file from Server B", "content":content}
 
-    /repos/{owner}/{repo}/contents/{path}
+    # Realizando el PUT
+    r = requests.put(url, data=data, headers=headers)
+
+
 
 
 
