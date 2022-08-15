@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.9";
+const char* version = "v3.0.1";
 bool updateIsOk = true;
 
 /*
@@ -22,7 +22,7 @@ WebServer server(80);
  * funcion encargada de realizar el upload
  */
 void UpdateFile(){
-  WiFiClient client;
+  WiFiClientSecure client;
   /*
    *Se permiten las redirecciones enviadas en el headder para la libreria httpUpdate
    */
@@ -35,6 +35,8 @@ void UpdateFile(){
    *incia la carga del archivo y si hay un error en la subida o conexion se imprime el error
     Serial.printf("pre");
    */
+
+  client.setInsecure(); /* Permite que el cliente cargue archivos de servidores sin certificado */
   t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
   
     switch (ret) {
