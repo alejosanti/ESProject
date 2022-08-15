@@ -31,7 +31,10 @@ def atender_webhook():
     
     # Escribiendo archivos localmente
     write_files_localy(files)
-    # requests.post('http://192.168.4.2:5000/github-webhook', json = files)
+    
+    # Creando binarios
+    create_binaries()
+
     return "Done"
 
 def github_read_file(username, repository_name, tree_sha, github_token=None):
@@ -45,9 +48,9 @@ def github_read_file(username, repository_name, tree_sha, github_token=None):
     r.raise_for_status()
     data = r.json()
 
-    # Agregando los bytes correspondientes al contenido real de los archivos y su codificacion
+    # Agregando el contenido real de los archivos y su codificacion
     for file in data['tree']:
-        if file['type'] == 'blob': # blob son los archivos con contenido real (no metadatos)
+        if file['type'] == 'blob': # blob son los archivos con contenido (no directorios)
             print("\nObteniendo archivo: " + file['path'])
             path = "Arduino_code/" + file['path']
             url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{path}'
@@ -57,11 +60,11 @@ def github_read_file(username, repository_name, tree_sha, github_token=None):
             file['content'] = file_data['content']
             file['encoding'] = file_data['encoding']
 
-    return {"files" : data['tree']}
+    return data['tree']
 
 def write_files_localy(files):
     for file in files:
-        if file['type'] == 'blob': # Creo que esta comprobacion está obsoleta
+        if file['type'] == 'blob':
             # Decodificando contenido
             file_content = file['content']
             file_content_encoding = file['encoding']
@@ -85,7 +88,7 @@ def write_files_localy(files):
             fileWriter.write(file_content)
             fileWriter.close()
 
-    # Generando archivo binario
+def create_binaries():
     try:
         print("\nEmpezando compilacion del ino")
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
