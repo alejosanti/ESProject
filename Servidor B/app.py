@@ -1,8 +1,7 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask
 from flask_pymongo import PyMongo
-import datetime, bcrypt, requests, os, time
+import requests, os
 import base64
-import json
 import requests
 import os
 
@@ -32,8 +31,11 @@ def atender_webhook():
     # Escribiendo archivos localmente
     write_files_localy(files)
     
-    # Creando binarios
-    create_binaries()
+    # Creando binario
+    create_binary_file()
+
+    # Subiendo binarios
+    upload_binary_file()
 
     return "Done"
 
@@ -88,7 +90,7 @@ def write_files_localy(files):
             fileWriter.write(file_content)
             fileWriter.close()
 
-def create_binaries():
+def create_binary_file():
     try:
         print("\nEmpezando compilacion del ino")
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
@@ -96,6 +98,24 @@ def create_binaries():
     except Exception as e:
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
+
+def upload_binary_file():
+    # Leyendo el archivo y codificandolo en base64 (para compatibilidad con la API de GitHub)
+    cwd =  os.getcwd()
+    path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
+    path = path.replace("/", os.sep)
+    print("\nBuscando binario en:  " + path)
+
+    binario = open(path, "rb", errors="ignore")
+    content = base64.b64encode(binario)
+    print("\nContenido encriptado en base 64: \n " + content)
+    
+    # Subiendo a GitHub
+    url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{file_name}?recursive=1'
+
+    /repos/{owner}/{repo}/contents/{path}
+
+
 
 
 if __name__ == "__main__":
