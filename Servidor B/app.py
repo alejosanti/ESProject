@@ -128,7 +128,7 @@ def upload_binary_file():
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
-    binario = open(path, "rb", errors="ignore")
+    binario = open(path, "rb")
     content = base64.b64encode(binario)
 
     binary_sha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
