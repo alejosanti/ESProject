@@ -112,6 +112,7 @@ def upload_binary_file():
             En el cuerpo:
                 -message --> mensaje de commit
                 -content --> contenido del binario en base64
+                -sha --> codigo sha del archivo a reemplazar (se obtiene en https://api.github.com/repos/alejosanti/ESProject/contents/Binaries/otaesp.ino.bin)
     """
     # Datos del header
     headers = {}
@@ -119,7 +120,7 @@ def upload_binary_file():
         headers['Authorization'] = f"token {github_token}"
     
     # Datos de la ruta
-    gitPath = "Binaries/binario.bin"
+    gitPath = "Binaries/otaesp.ino.bin"
     url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{gitPath}'
 
     # Datos del cuerpo
@@ -127,19 +128,17 @@ def upload_binary_file():
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
-
     binario = open(path, "rb", errors="ignore")
     content = base64.b64encode(binario)
-    print("\nContenido encriptado en base 64: \n " + content)
-    data = {"message":"Automatic upload of the binary file from Server B", "content":content}
+
+    binary_sha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
+
+    data = {"message":"Automatic upload of the binary file from Server B", "content":content, 'sha':binary_sha}
 
     # Realizando el PUT
+    print('\nSubiendo binario a GitHub...\n')
     r = requests.put(url, data=data, headers=headers)
-
-
-
-
-
+    print(r.raise_for_status())
 
 if __name__ == "__main__":
     app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
