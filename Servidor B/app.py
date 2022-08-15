@@ -31,7 +31,7 @@ def atender_webhook():
     
     # Escribiendo archivos localmente
     write_files_localy(files)
-    requests.post('http://192.168.4.2:5000/github-webhook', json = files)
+    # requests.post('http://192.168.4.2:5000/github-webhook', json = files)
     return "Done"
 
 def github_read_file(username, repository_name, tree_sha, github_token=None):
