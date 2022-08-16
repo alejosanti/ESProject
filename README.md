@@ -2,9 +2,9 @@
 instalar python
 instalar mongo
 
-pip install virtualenv
-cd '.\Servidor A\'
-.\venv\Scripts\activate
+pip install -r requirements.txt
+
+SET github_token=tokendegithub
 
 Configurar Arduino IDE
 https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
