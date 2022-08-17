@@ -1,3 +1,4 @@
+import json
 from urllib import request
 from flask import Flask
 from flask_pymongo import PyMongo
@@ -14,7 +15,7 @@ app.config['MONGO_URI']='mongodb://localhost:27017/otadata'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 mongo = PyMongo(app)
 
-github_token = ''
+github_token = os.environ.get('github_token')
 username = 'alejosanti'
 repository_name = 'ESProject'
 file_path = ''
@@ -38,7 +39,7 @@ def atender_webhook():
     # Subiendo binarios
     upload_binary_file()
 
-    return "Done"
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 def github_read_file(username, repository_name, tree_sha, github_token=None):
     headers = {}
@@ -116,11 +117,13 @@ def upload_binary_file():
     """
     # Datos del header
     headers = {}
-    if github_token:
+    if os.environ.get('github_token'):
         headers['Authorization'] = f"token {github_token}"
+        headers['Content-Type'] = "application/json"
     
     # Datos de la ruta
     gitPath = "Binaries/otaesp.ino.bin"
+
     url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{gitPath}'
 
     # Datos del cuerpo
@@ -129,19 +132,19 @@ def upload_binary_file():
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
     
-    """
-    binario = open(path, "rb")
+    
+    binario = open(path, "rb").read()
     content = base64.b64encode(binario)
-    """
-    content = open(path, "rb")
+        
+    # Buscando sha del archivo binario     
+    binary_sha = requests.get(url, headers=headers).json()['sha']
 
-    binary_sha = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
+    data = {"message":"Automatic upload of the binary file from Server B", "content":str(content.decode("UTF-8")), "sha":binary_sha}
 
-    data = {"message":"Automatic upload of the binary file from Server B", "content":content, 'sha':binary_sha}
-
-    # Realizando el PUT
+    # Realizando el PUT para subir el binario
     print('\nSubiendo binario a GitHub...\n')
-    r = requests.put(url, data=data, headers=headers)
+    r = requests.put(url, json=data, headers=headers)
+
     print(r.raise_for_status())
 
 if __name__ == "__main__":

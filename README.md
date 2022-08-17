@@ -16,5 +16,7 @@ Instalar Arduino CLI
 arduino-cli core update-index
 arduino-cli core install esp32:esp32
 
+En el repositorio tiene que estar el path Arduino_code, donde se buscará el código del ESP, y el archivo Binaries/otaesp.ino.bin (aunque esté vacío).
+
 .
 .
