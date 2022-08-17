@@ -19,7 +19,6 @@ github_token = os.environ.get('github_token')
 username = 'alejosanti'
 repository_name = 'ESProject'
 file_path = ''
-tree_sha = '7ba231fed19a0879ea90e00d0a459a2511d64ff7' # Configurar con la api de github, depende de cada repositorio
 placa = "esp32:esp32:nodemcu-32s"
 
 
@@ -28,7 +27,7 @@ def atender_webhook():
     print("\nLlego un github webhook\n")
 
     # Leyendo archivos de GitHub
-    files = github_read_file(username, repository_name, tree_sha, github_token)
+    files = github_read_file()
     
     # Escribiendo archivos localmente
     write_files_localy(files)
@@ -41,11 +40,16 @@ def atender_webhook():
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-def github_read_file(username, repository_name, tree_sha, github_token=None):
+def github_read_file():
     headers = {}
     if github_token:
         headers['Authorization'] = f"token {github_token}"
-        
+    
+    # Obteniendo el sha del directorio
+    url = f'https://api.github.com/repos/{username}/{repository_name}/contents'
+    root = requests.get(url, headers=headers).json()
+    tree_sha = list(filter(lambda file: file['path'] == "Arduino_code" , root))[0]['sha']
+
     url = f'https://api.github.com/repos/{username}/{repository_name}/git/trees/{tree_sha}?recursive=1'
 
     r = requests.get(url, headers=headers)
@@ -145,7 +149,8 @@ def upload_binary_file():
     print('\nSubiendo binario a GitHub...\n')
     r = requests.put(url, json=data, headers=headers)
 
-    print(r.raise_for_status())
+    print("\n Estado del update: ")
+    print(r.raise_for_status() if r.raise_for_status() == None else r.status_code)
 
 if __name__ == "__main__":
     app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
