@@ -1,5 +1,6 @@
+import datetime
 import json
-from urllib import request
+import time
 from flask import Flask
 from flask_pymongo import PyMongo
 import requests, os
@@ -8,6 +9,8 @@ import requests
 import os
 
 UPLOAD_FOLDER = 'static/uploads/'
+ALLOWED_EXTENSIONS = set(['bin'])
+
 
 app = Flask(__name__)
 app.secret_key = "otawebapp"
@@ -35,10 +38,21 @@ def atender_webhook():
     # Creando binario
     create_binary_file()
 
-    # Subiendo binarios
-    upload_binary_file()
-
+    # Cargando binario al ESP
+    estado = upload_to_ESP()
+    print(estado)
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+
+# Endpoint para que consulte el ESP
+@app.route('/get-binary-file', methods=["GET"])
+def get_binary_file():
+    # Leyendo binario
+    cwd =  os.getcwd()
+    path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
+    path = path.replace("/", os.sep)
+    binario = open(path, "rb").read()
+
+    return binario
 
 def github_read_file():
     headers = {}
@@ -105,20 +119,20 @@ def create_binary_file():
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
+"""
 def upload_binary_file():
-    """ 
-        Datos necesarios para subir a GitHub:
-            En la ruta: 
-                -owner --> username
-                -repo --> repository_name
-                -path --> gitPath
-            En el encabezado:
-                -Authorization --> github_token
-            En el cuerpo:
-                -message --> mensaje de commit
-                -content --> contenido del binario en base64
-                -sha --> codigo sha del archivo a reemplazar (se obtiene en https://api.github.com/repos/alejosanti/ESProject/contents/Binaries/otaesp.ino.bin)
-    """
+        # Datos necesarios para subir a GitHub:
+        #     En la ruta: 
+        #         -owner --> username
+        #         -repo --> repository_name
+        #         -path --> gitPath
+        #     En el encabezado:
+        #         -Authorization --> github_token
+        #     En el cuerpo:
+        #         -message --> mensaje de commit
+        #         -content --> contenido del binario en base64
+        #         -sha --> codigo sha del archivo a reemplazar (se obtiene en https://api.github.com/repos/alejosanti/ESProject/contents/Binaries/otaesp.ino.bin)
+
     # Datos del header
     headers = {}
     if os.environ.get('github_token'):
@@ -151,6 +165,34 @@ def upload_binary_file():
 
     print("\n Estado del update: ")
     print(r.raise_for_status() if r.raise_for_status() == None else r.status_code)
+"""
+
+def upload_to_ESP():
+    print("\nCargando binario al ESP...")    
+    # binario.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
+    response = requests.get('http://192.168.4.1/update').text
+    if(response != "update success"):
+        return "\nNo se pudo realizar la actualizacion"
+    else:     
+        for i in range(0, 5):  # try 5 times
+            try:
+                print("Consultando version...   (intento " + i + " de 5)")
+                version = requests.get('http://192.168.4.1/version').text
+            except Exception:
+                pass
+
+            if version is None:
+                time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
+            else:
+                break
+        if  version is None:
+            return "\nNo se pudo obtener la version del ESP"
+        else:
+            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': username, 'filename': binario.filename, 'version': version}) 
+            return "\nActualizacion completa"
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
     app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.

@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.3";
+const char* version = "v3.0.1";
 bool updateIsOk = true;
 
 /*
@@ -18,26 +18,49 @@ bool updateIsOk = true;
  
 WebServer server(80);
 
+void update_started() {
+  Serial.println("CALLBACK:  HTTP update process started");
+}
+ 
+void update_finished() {
+  Serial.println("CALLBACK:  HTTP update process finished");
+}
+ 
+void update_progress(int cur, int total) {
+  Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
+}
+ 
+void update_error(int err) {
+  Serial.printf("CALLBACK:  HTTP update fatal error code %d\n", err);
+}
+
 /*
  * funcion encargada de realizar el upload
- */
+ */ 
 void UpdateFile(){
-  WiFiClientSecure client;
-  /*
-   *Se permiten las redirecciones enviadas en el headder para la libreria httpUpdate
-   */
-  httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
-  /*
-   *Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
-   */
-  httpUpdate.rebootOnUpdate(false);
-  /*
-   *incia la carga del archivo y si hay un error en la subida o conexion se imprime el error
-    Serial.printf("pre");
-   */
+  WiFiClient client;
 
-  client.setInsecure(); /* Permite que el cliente cargue archivos de servidores sin certificado */
-  t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
+  /* 
+    The line below is optional. It can be used to blink the LED on the board during flashing
+    The LED will be on during download of one buffer of data from the network. The LED will
+    be off during writing that buffer to flash
+    On a good connection the LED should flash regularly. On a bad connection the LED will be
+    on much longer than it will be off. Other pins than LED_BUILTIN may be used. The second
+    value is used to put the LED on. If the LED is on with HIGH, that value should be passed
+  */
+  httpUpdate.setLedPin(LED_BUILTIN, LOW);
+
+  // Add optional callback notifiers
+  httpUpdate.onStart(update_started);
+  httpUpdate.onEnd(update_finished);
+  httpUpdate.onProgress(update_progress);
+  httpUpdate.onError(update_error);
+
+  // Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
+  httpUpdate.rebootOnUpdate(false);
+
+  Serial.println(F("Update start now!"));
+  t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.0.3:16000/get-binary-file"); 
   
     switch (ret) {
       case HTTP_UPDATE_FAILED:
