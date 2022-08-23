@@ -200,4 +200,4 @@ def allowed_file(filename):
 
 if __name__ == "__main__":
     app.run(host='192.168.0.3', port=16000, debug=True, ssl_context=('cert.pem', 'key.pem')) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
-    github_token = os.environ.get('GITHUB_TOKEN')
+    github_token = os.environ.get('GITHUB_TOKEN') 
