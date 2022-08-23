@@ -24,11 +24,6 @@ repository_name = 'ESProject'
 file_path = ''
 placa = "esp32:esp32:nodemcu-32s"
 
-@app.route('/')
-def land():
-    return render_template('home.html')
-
-
 @app.route('/github-webhook', methods=["POST"])
 def atender_webhook():
     print("\nLlego un github webhook\n")
