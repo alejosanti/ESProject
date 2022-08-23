@@ -1,7 +1,7 @@
 import datetime
 import json
 import time
-from flask import Flask
+from flask import Flask, render_template
 from flask_pymongo import PyMongo
 import requests, os
 import base64
@@ -23,6 +23,10 @@ username = 'alejosanti'
 repository_name = 'ESProject'
 file_path = ''
 placa = "esp32:esp32:nodemcu-32s"
+
+@app.route('/')
+def land():
+    return render_template('home.html')
 
 
 @app.route('/github-webhook', methods=["POST"])
@@ -195,5 +199,5 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
-    app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
+    app.run(host='192.168.0.3', port=16000, debug=True, ssl_context=('cert.pem', 'key.pem')) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
     github_token = os.environ.get('GITHUB_TOKEN')

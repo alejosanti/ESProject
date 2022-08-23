@@ -1,0 +1,20 @@
+{% extends 'base.html'%} {% block title %} Login {% endblock %} {% block content %}
+<div class="container col-md-3 col-md-offset-3 mt-5 mb-5 px-10">
+    <div class="row">
+        <h2 class="text-center">Bienvenido</h2>
+        <h6 class="text-center text-muted">Para acceder al sistema OTA Web ingrese sus datos</h6><br>
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="user">Usuario</label>
+                <input name="user" class="form-control" id="user" placeholder="Ingrese su usuario" required>
+                <label for="pwd">Contraseña</label>
+                <input type="password" name="pwd" class="form-control" id="pwd" placeholder="Ingrese su contraseña" required><br>
+                <button type="submit" class="btn btn-secondary mb-10">Ingresar</button>
+            </div>
+        </form>
+        {% if message  %}
+            <p class="alert alert-danger">{{ message }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
