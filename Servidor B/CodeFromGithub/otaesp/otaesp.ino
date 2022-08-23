@@ -60,7 +60,7 @@ void UpdateFile(){
   httpUpdate.rebootOnUpdate(false);
 
   Serial.println(F("Update start now!"));
-  t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.0.3:16000/get-binary-file"); 
+  t_httpUpdate_return ret = httpUpdate.update(client, "https://192.168.0.3:16000/get-binary-file"); 
   
     switch (ret) {
       case HTTP_UPDATE_FAILED:

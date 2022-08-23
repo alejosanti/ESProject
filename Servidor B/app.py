@@ -42,17 +42,6 @@ def atender_webhook():
     print(estado)
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-# Endpoint para que consulte el ESP
-@app.route('/get-binary-file', methods=["GET"])
-def get_binary_file():
-    # Leyendo binario
-    cwd =  os.getcwd()
-    path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
-    path = path.replace("/", os.sep)
-    binario = open(path, "rb").read()
-
-    return binario
-
 def github_read_file():
     headers = {}
     if github_token:
@@ -114,6 +103,18 @@ def create_binary_file():
         print("\nEmpezando compilacion del ino")
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
         print("\nCompilacion del ino finalizada")
+
+        # Guardando archivo en un lugar alcanzable por el ESP
+        cwd =  os.getcwd()
+        path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
+        path = path.replace("/", os.sep)
+        binario_content = open(path, "rb").read()
+
+        newBinPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
+        newBinFile = open(newBinPath, "wb")
+        newBinFile.write(binario_content)
+        print("\nBinario guardado...")
+
     except Exception as e:
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
