@@ -9,14 +9,14 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.1";
+const char* version = "v3.0.2";
 bool updateIsOk = true;
 
 /*
  * Declaramos objeto de la libreria WebServer
  */
  
-WebServer server(80);
+WebServer server(443);
 
 void update_started() {
   Serial.println("CALLBACK:  HTTP update process started");
@@ -38,7 +38,9 @@ void update_error(int err) {
  * funcion encargada de realizar el upload
  */ 
 void UpdateFile(){
-  WiFiClient client;
+  WiFiClientSecure client;
+    
+  client.setInsecure();
 
   /* 
     The line below is optional. It can be used to blink the LED on the board during flashing
@@ -60,7 +62,7 @@ void UpdateFile(){
   httpUpdate.rebootOnUpdate(false);
 
   Serial.println(F("Update start now!"));
-  t_httpUpdate_return ret = httpUpdate.update(client, "https://192.168.0.3:16000/get-binary-file"); 
+  t_httpUpdate_return ret = httpUpdate.update(client, "https://192.168.0.3:16000/static/uploads/firmware.bin"); 
   
     switch (ret) {
       case HTTP_UPDATE_FAILED:
