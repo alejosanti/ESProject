@@ -37,6 +37,9 @@ def atender_webhook():
     # Creando binario
     # create_binary_file()
 
+    # Subiendo binario a GitHub
+    # upload_binary_file()
+
     # Cargando binario al ESP
     estado = upload_to_ESP()
     print(estado)
@@ -119,7 +122,6 @@ def create_binary_file():
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
-"""
 def upload_binary_file():
         # Datos necesarios para subir a GitHub:
         #     En la ruta: 
@@ -165,7 +167,6 @@ def upload_binary_file():
 
     print("\n Estado del update: ")
     print(r.raise_for_status() if r.raise_for_status() == None else r.status_code)
-"""
 
 def upload_to_ESP():
     print("\nCargando binario al ESP...")    
@@ -195,5 +196,5 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
-    app.run(host='192.168.0.3', port=16000, debug=True, ssl_context=('cert.pem', 'key.pem')) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
+    app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
     github_token = os.environ.get('GITHUB_TOKEN') 
