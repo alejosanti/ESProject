@@ -29,29 +29,28 @@ void UpdateFile(){
    */
   httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 
-  /* 
-   *  Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
-  */
+  /*
+   *Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
+   */
   httpUpdate.rebootOnUpdate(false);
 
-  Serial.println(F("Update start now!"));
-  t_httpUpdate_return ret = httpUpdate.update(client, "https://github.com/alejosanti/ESProject/raw/main/Binaries/otaesp.ino.bin"); 
+  t_httpUpdate_return ret = httpUpdate.update(client, "https://github.com/alejosanti/ESProject/raw/main/Binaries/otaesp.ino.bin");  
   
-    switch (ret) {
-      case HTTP_UPDATE_FAILED:
-        Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-        updateIsOk = false;
-        break;
+  switch (ret) {
+    case HTTP_UPDATE_FAILED:
+      Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+      updateIsOk = false;
+      break;
 
-      case HTTP_UPDATE_NO_UPDATES:
-        Serial.println("HTTP_UPDATE_NO_UPDATES");
-        updateIsOk = false;
-        break;
+    case HTTP_UPDATE_NO_UPDATES:
+      Serial.println("HTTP_UPDATE_NO_UPDATES");
+      updateIsOk = false;
+      break;
 
-      case HTTP_UPDATE_OK:
-        Serial.println("HTTP_UPDATE_OK");
-        break;
-    }
+    case HTTP_UPDATE_OK:
+      Serial.println("HTTP_UPDATE_OK");
+      break;
+  }
 }
 
 void SetupServer() { 
@@ -62,7 +61,7 @@ void SetupServer() {
     server.sendHeader("Connection", "close");
     server.send(200,"text/plain",version);
   });
-
+  
   /*
    * Manejo del endpoint '/update' para subir el archivo
    */
@@ -77,7 +76,6 @@ void SetupServer() {
       server.send(408, "text/plain", String("update failed"));
     }
   });
-
   server.on("/index", HTTP_GET, [](){
     String s = MAIN_page; 
     server.send(200, "text/html", s);
@@ -86,13 +84,11 @@ void SetupServer() {
 }
 
 void setup(void) {
-
   Serial.begin(115200);
-
+  
   /*
    * Se configura el ESP32 como Access Point
    */
-
   delay(10);
   Serial.print("Seteando WiFi en modo Access Point");
   WiFi.mode(WIFI_AP);
@@ -101,17 +97,14 @@ void setup(void) {
    Serial.println(".");
     delay(100);
   }
-
   Serial.print("Iniciado AP ");
   Serial.println(ssid);
   Serial.print("IP address:\t");
   Serial.println(WiFi.softAPIP());
-
+  
   SetupServer();
-
   server.begin();
   
-
 }
 
 void loop() {
