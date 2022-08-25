@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.2";
+const char* version = "v3.0.1";
 bool updateIsOk = true;
 
 /*
@@ -29,7 +29,9 @@ void UpdateFile(){
    */
   httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
 
-  // Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
+  /* 
+   *  Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
+  */
   httpUpdate.rebootOnUpdate(false);
 
   Serial.println(F("Update start now!"));
