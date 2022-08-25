@@ -60,7 +60,7 @@ void UpdateFile(){
   httpUpdate.rebootOnUpdate(false);
 
   Serial.println(F("Update start now!"));
-  t_httpUpdate_return ret = httpUpdate.update(client, "https://api.github.com/repos/alejosanti/ESProject/contents/Binaries/otaesp.ino.bin"); 
+  t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
   
     switch (ret) {
       case HTTP_UPDATE_FAILED:

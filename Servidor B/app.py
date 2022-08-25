@@ -29,16 +29,16 @@ def atender_webhook():
     print("\nLlego un github webhook\n")
 
     # Leyendo archivos de GitHub
-    # files = github_read_file()
+    files = github_read_file()
     
     # Escribiendo archivos localmente
-    # write_files_localy(files)
+    write_files_localy(files)
     
     # Creando binario
-    # create_binary_file()
+    create_binary_file()
 
     # Subiendo binario a GitHub
-    # upload_binary_file()
+    upload_binary_file()
 
     # Cargando binario al ESP
     estado = upload_to_ESP()
