@@ -9,7 +9,7 @@
  */
 const char* ssid = "ESP32_AP";
 const char* password = "123456789";
-const char* version = "v3.0.3";
+const char* version = "v3.0.1";
 bool updateIsOk = true;
 
 /*
@@ -60,7 +60,7 @@ void UpdateFile(){
   httpUpdate.rebootOnUpdate(false);
 
   Serial.println(F("Update start now!"));
-  t_httpUpdate_return ret = httpUpdate.update(client, "http://192.168.4.2:5000/display/firmware.bin"); 
+  t_httpUpdate_return ret = httpUpdate.update(client, "https://github.com/alejosanti/ESProject/raw/main/Binaries/otaesp.ino.bin"); 
   
     switch (ret) {
       case HTTP_UPDATE_FAILED:
