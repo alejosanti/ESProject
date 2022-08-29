@@ -1,114 +1,53 @@
+ /*
+  Important Notice: Star the repository on Github if you like the library! :)
+  Repository Link: https://github.com/ayushsharma82/AsyncElegantOTA
+*/
+
+
 #include <WiFi.h>
-#include <WebServer.h>
-#include <HTTPClient.h>
-#include <HTTPUpdate.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
+
 #include "index.h"
 
-/*
- * usuario y contrasenia par a la conexion al ESP en modo AP
- */
-const char* ssid = "ESP32_AP";
-const char* password = "123456789";
-const char* version = "v3.0.1";
-bool updateIsOk = true;
+const char* version = "v3.0.0";
+const char* ssid = "Fibertel WiFi250 2.4GHz";
+const char* password = "00442301230";
 
-/*
- * Declaramos objeto de la libreria WebServer
- */
- 
-WebServer server(80);
+AsyncWebServer server(80);
 
-/*
- * funcion encargada de realizar el upload
- */ 
-void UpdateFile(){
-  WiFiClient client;
-
-  /*
-   *Se permiten las redirecciones enviadas en el headder para la libreria httpUpdate
-   */
-  httpUpdate.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
-
-  /*
-   *Se configura la libreria para que la actualizacion del firmware no reinicie el ESP
-   */
-  httpUpdate.rebootOnUpdate(false);
-
-  t_httpUpdate_return ret = httpUpdate.update(client, "https://github.com/alejosanti/ESProject/raw/main/Binaries/otaesp.ino.bin");  
-  
-  switch (ret) {
-    case HTTP_UPDATE_FAILED:
-      Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-      updateIsOk = false;
-      break;
-
-    case HTTP_UPDATE_NO_UPDATES:
-      Serial.println("HTTP_UPDATE_NO_UPDATES");
-      updateIsOk = false;
-      break;
-
-    case HTTP_UPDATE_OK:
-      Serial.println("HTTP_UPDATE_OK");
-      break;
-  }
-}
-
-void SetupServer() { 
-  /*
-   * Manejo del endpoint '/version' para subir el archivo
-   */
-  server.on("/version", HTTP_GET, [](){
-    server.sendHeader("Connection", "close");
-    server.send(200,"text/plain",version);
-  });
-  
-  /*
-   * Manejo del endpoint '/update' para subir el archivo
-   */
-  server.on("/update", HTTP_GET, []() {
-    UpdateFile();
-    Serial.println();
-    if(updateIsOk){
-      server.send(200, "text/plain", String("update success"));
-      EspClass ESP;
-      ESP.restart();
-    } else {
-      server.send(408, "text/plain", String("update failed"));
-    }
-  });
-  server.on("/index", HTTP_GET, [](){
-    String s = MAIN_page; 
-    server.send(200, "text/html", s);
-  });
-
-}
 
 void setup(void) {
   Serial.begin(115200);
-  
-  /*
-   * Se configura el ESP32 como Access Point
-   */
-  delay(10);
-  Serial.print("Seteando WiFi en modo Access Point");
-  WiFi.mode(WIFI_AP);
-  while(!WiFi.softAP(ssid, password))
-  {
-   Serial.println(".");
-    delay(100);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.println("");
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
   }
-  Serial.print("Iniciado AP ");
+  Serial.println("");
+  Serial.print("Connected to ");
   Serial.println(ssid);
-  Serial.print("IP address:\t");
-  Serial.println(WiFi.softAPIP());
-  
-  SetupServer();
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/version", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", version);
+  });
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String s = MAIN_page; 
+    request->send(200, "text/html", s);
+  });
+
+  AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
   server.begin();
-  
+  Serial.println("HTTP server started");
 }
 
-void loop() {
-
-  server.handleClient();
-
+void loop(void) {
 }

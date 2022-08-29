@@ -43,7 +43,7 @@ def atender_webhook():
 
     # Cargando binario al ESP
     estado = upload_to_ESP()
-    print(estado)
+    print("Estado del update al ESP:" + estado)
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 def github_read_file():
