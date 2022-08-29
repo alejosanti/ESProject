@@ -7,6 +7,7 @@ import requests, os
 import base64
 import requests
 import os
+import hashlib
 
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = set(['bin'])
@@ -38,7 +39,7 @@ def atender_webhook():
     create_binary_file()
 
     # Subiendo binario a GitHub
-    upload_binary_file()
+    # upload_binary_file()
 
     # Cargando binario al ESP
     estado = upload_to_ESP()
@@ -122,6 +123,7 @@ def create_binary_file():
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
+"""
 def upload_binary_file():
         # Datos necesarios para subir a GitHub:
         #     En la ruta: 
@@ -167,30 +169,46 @@ def upload_binary_file():
 
     print("\n Estado del update: ")
     print(r.raise_for_status() if r.raise_for_status() == None else r.status_code)
+"""
 
 def upload_to_ESP():
-    print("\nCargando binario al ESP...")    
-    # binario.save(os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin'))
-    response = requests.get('http://192.168.4.1/update').text
-    if(response != "update success"):
-        return "\nNo se pudo realizar la actualizacion"
-    else:     
-        for i in range(0, 5):  # try 5 times
-            try:
-                print("Consultando version...   (intento " + i + " de 5)")
-                version = requests.get('http://192.168.4.1/version').text
-            except Exception:
-                pass
+    print("\nCargando binario al ESP...")
 
-            if version is None:
-                time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
-            else:
-                break
-        if  version is None:
-            return "\nNo se pudo obtener la version del ESP"
-        else:
-            mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': username, 'filename': binario.filename, 'version': version}) 
-            return "\nActualizacion completa"
+    # Para cargar el binario hay que hacer un POST con el binario y con su hash MD5
+    cwd =  os.getcwd()
+    path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
+    path = path.replace("/", os.sep)
+    print("\nBuscando binario en:  " + path)
+    binario = open(path, "rb").read()
+
+    md5 = hashlib.md5(binario).hexdigest()
+    print("\nHash MD5 del binario: " + md5)
+
+    data = {'firmware': binario, 'md5': md5}
+
+    response = requests.post('http://192.168.0.206/update', data = data).text
+
+    return response
+
+    # if(response != "update success"):
+    #     return "\nNo se pudo realizar la actualizacion"
+    # else:     
+    #     for i in range(0, 5):  # try 5 times
+    #         try:
+    #             print("Consultando version...   (intento " + i + " de 5)")
+    #             version = requests.get('http://192.168.4.1/version').text
+    #         except Exception:
+    #             pass
+
+    #         if version is None:
+    #             time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
+    #         else:
+    #             break
+    #     if  version is None:
+    #         return "\nNo se pudo obtener la version del ESP"
+    #     else:
+    #         mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': username, 'filename': binario.filename, 'version': version}) 
+    #         return "\nActualizacion completa"
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
