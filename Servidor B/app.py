@@ -42,10 +42,10 @@ def atender_webhook():
     # upload_binary_file()
 
     # Cargando binario al ESP
-    # estado = upload_to_ESP()
-    # print("\nEstado del update al ESP:" + estado)
-    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
-
+    estado = upload_to_ESP()
+    print("\nEstado del update al ESP:" + estado)
+    return json.dumps({'state':estado}), 200, {'ContentType':'application/json'} 
+    
 def github_read_file():
     headers = {}
     if github_token:
@@ -184,13 +184,17 @@ def upload_to_ESP():
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
     binario = open(path, "rb").read()
+    
+    binarySize = os.path.getsize(path)
+    print("El tamaño del binario es: " + binarySize)
 
     md5 = hashlib.md5(binario).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'firmware': binario, 'md5': md5}
+    data = {'firmware': binario, 'md5': md5} 
+    headers = {'Content-Length': binarySize}
 
-    response = requests.post('http://192.168.0.206/update', data = data).text
+    response = requests.post('http://192.168.0.206/update', data = data, headers = headers).text
 
     return response
 
