@@ -191,7 +191,7 @@ def upload_to_ESP():
     md5 = hashlib.md5(binario).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'firmware': binario, 'md5': md5} 
+    data = {'filename': 'firmware', 'firmware': binario, 'md5': md5} 
     headers = {'Content-Length': str(binarySize)}
 
     response = requests.post('http://192.168.0.206/update', data = data, headers = headers).text
