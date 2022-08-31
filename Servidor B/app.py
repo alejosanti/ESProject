@@ -42,8 +42,8 @@ def atender_webhook():
     # upload_binary_file()
 
     # Cargando binario al ESP
-    estado = upload_to_ESP()
-    print("Estado del update al ESP:" + estado)
+    # estado = upload_to_ESP()
+    # print("\nEstado del update al ESP:" + estado)
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 def github_read_file():
@@ -105,7 +105,7 @@ def write_files_localy(files):
 def create_binary_file():
     try:
         print("\nEmpezando compilacion del ino")
-        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e")
+        os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e  --clean")
         print("\nCompilacion del ino finalizada")
 
         # Guardando archivo en un lugar alcanzable por el ESP
