@@ -87,7 +87,7 @@ def write_files_localy(files):
                     file_content = base64.b64decode(file_content).decode()
                 except UnicodeDecodeError:
                     # file_content = file_content.decode(encoding='UTF-8')
-                    print(file_content)
+                    pass
 
             # Guardando path del archivo
             file_path = ("CodeFromGithub/" + file['path']).replace("/", os.sep)
