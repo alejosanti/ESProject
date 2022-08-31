@@ -192,8 +192,19 @@ def upload_to_ESP():
     print("\nHash MD5 del binario: " + md5)
 
     data = {'filename': 'firmware', 'firmware': binario, 'md5': md5} 
-    # headers = {'Content-Length': str(binarySize)}
-    headers = {'Content-Length': '803890'}
+    # {'Content-Length': str(binarySize)}
+    headers = { 'Accept': '*/*',
+                'Accept-Encoding': 'gzip, deflate',
+                'Accept-Language': 'es-ES,es;q=0.9',
+                'Connection': 'keep-alive',
+                'Content-Length': '803890',
+                'Content-Type': 'multipart/form-data;  boundary=----WebKitFormBoundaryiO4Rhc6PAkJ684w3',
+                'Cookie': 'visited=1',
+                'Host': '192.168.0.206',
+                'Origin': 'http://192.168.0.206',
+                'Referer': 'http://192.168.0.206/update',
+                'Sec-GPC': '1',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36'}
 
     response = requests.post('http://192.168.0.206/update', data = data, headers = headers).text
 
