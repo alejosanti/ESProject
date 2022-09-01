@@ -212,7 +212,7 @@ def upload_to_ESP():
     r = req.prepare()
     print("\nDatos del post: ")
     print(r.headers)
-    print(r.body)
+    # print(r.body)
 
     response = requests.post('http://192.168.0.206/update', files = files, data = data, headers = headers).text
 
