@@ -193,8 +193,9 @@ def upload_to_ESP():
 
     data = {'filename': 'firmware', 'md5': md5} 
 
-    binario = open(path, "rb")
-    files = {'firmware':binario}
+    files = {'firmware': open(path, "rb")}
+
+    
 
     # {'Content-Length': str(binarySize)}
     headers = { 'Accept': '*/*',
@@ -206,6 +207,12 @@ def upload_to_ESP():
     
     # headers = {'Content-Length': str(binarySize)}
     # headers = {'Content-Length': '803890'}
+
+    req = requests.Request('POST','http://192.168.0.206/update', headers=headers, data=data, files=files)
+    r = req.prepare()
+    print("\nDatos del post: ")
+    print(r.headers)
+    print(r.body)
 
     response = requests.post('http://192.168.0.206/update', files = files, data = data, headers = headers).text
 
