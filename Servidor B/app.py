@@ -183,17 +183,20 @@ def upload_to_ESP():
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
-    binario = open(path, "rb").read()
-    
-    binarySize = os.path.getsize(path)
-    print("El tamaño del binario es: " + str(binarySize))
 
-    md5 = hashlib.md5(binario).hexdigest()
+    binario = open(path, "rb")
+    
+    files = {'firmware': binario}
+    
+    # binarySize = os.path.getsize(path)
+    # print("El tamaño del binario es: " + str(binarySize))
+
+    md5 = hashlib.md5(binario.read()).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'md5': md5} 
+    data = {'md5': md5, 'filename': 'firmware'} 
 
-    files = {'firmware': open(path, "rb")}
+    
 
     
 
