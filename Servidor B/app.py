@@ -188,7 +188,7 @@ def upload_to_ESP():
     binarySize = os.path.getsize(path)
     print("El tamaño del binario es: " + str(binarySize))
 
-    md5 = hashlib.md5(binario).hexdigest()
+    md5 = hashlib.md5(binario.read()).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
     data = {'filename': 'firmware', 'md5': md5} 
