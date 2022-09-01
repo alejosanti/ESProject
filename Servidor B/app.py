@@ -183,7 +183,7 @@ def upload_to_ESP():
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
     path = path.replace("/", os.sep)
     print("\nBuscando binario en:  " + path)
-    binario = open(path, "rb").read()
+    binario = open(path, "rb")
     
     binarySize = os.path.getsize(path)
     print("El tamaño del binario es: " + str(binarySize))
