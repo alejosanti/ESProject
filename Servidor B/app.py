@@ -191,7 +191,7 @@ def upload_to_ESP():
     md5 = hashlib.md5(binario).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'filename': 'firmware', 'md5': md5} 
+    data = {'md5': md5} 
 
     files = {'firmware': open(path, "rb")}
 
@@ -210,11 +210,14 @@ def upload_to_ESP():
 
     req = requests.Request('POST','http://192.168.0.206/update', headers=headers, data=data, files=files)
     r = req.prepare()
-    print("\nDatos del post: ")
-    print(r.headers)
     # print(r.body)
+    logPath = cwd + "/logFile"
+    logPath = path.replace("/", os.sep)
+    logFile = open(logPath, "a")
+    logFile.write(str(r.body))
 
-    response = requests.post('http://192.168.0.206/update', files = files, data = data, headers = headers).text
+
+    response = requests.post('http://192.168.0.206/update', files=files, data=data, headers=headers).text
 
     return response
 
