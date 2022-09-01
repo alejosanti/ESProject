@@ -198,26 +198,17 @@ def upload_to_ESP():
     
 
     # {'Content-Length': str(binarySize)}
-    headers = { 'Accept': '*/*',
-                'Content-Length': '803890',
-                'Content-Type': 'multipart/form-data;  boundary=----WebKitFormBoundaryiO4Rhc6PAkJ684w3',
-                'Cookie': 'visited=1',
-                'Sec-GPC': '1',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36'}
+    # headers = { 'Accept': '*/*',
+    #             'Content-Length': '803890',
+    #             'Content-Type': 'multipart/form-data;  boundary=----WebKitFormBoundaryiO4Rhc6PAkJ684w3',
+    #             'Cookie': 'visited=1',
+    #             'Sec-GPC': '1',
+    #             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36'}
     
     # headers = {'Content-Length': str(binarySize)}
     # headers = {'Content-Length': '803890'}
 
-    req = requests.Request('POST','http://192.168.0.206/update', headers=headers, data=data, files=files)
-    r = req.prepare()
-    # print(r.body)
-    logPath = cwd + "/logFile"
-    logPath = path.replace("/", os.sep)
-    logFile = open(logPath, "a")
-    logFile.write(str(r.body))
-
-
-    response = requests.post('http://192.168.0.206/update', files=files, data=data, headers=headers).text
+    response = requests.post('http://192.168.0.206/update', data=data, files=files).text
 
     return response
 
