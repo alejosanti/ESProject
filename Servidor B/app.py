@@ -43,7 +43,7 @@ def atender_webhook():
 
     # Cargando binario al ESP
     estado = upload_to_ESP()
-    print("\nEstado del update al ESP:" + estado)
+    # print("\nEstado del update al ESP:" + estado)
     return json.dumps({'state':estado}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
@@ -186,7 +186,7 @@ def upload_to_ESP():
 
     binario = open(path, "rb")
     
-    files = {'firmware': binario}
+    # files = {'firmware': binario}
     
     # binarySize = os.path.getsize(path)
     # print("El tamaño del binario es: " + str(binarySize))
@@ -194,9 +194,13 @@ def upload_to_ESP():
     md5 = hashlib.md5(binario.read()).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'md5': md5, 'filename': 'firmware'} 
+    data = {'filename': 'firmware', 'name': 'firmware', 'md5': md5} 
 
-    
+    upldfiledict = {"file": (r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
+
+    post_resp = requests.post("http://192.168.0.206/update", data=data, files=upldfiledict)
+
+    print(post_resp.text)
 
     
 
@@ -211,9 +215,9 @@ def upload_to_ESP():
     # headers = {'Content-Length': str(binarySize)}
     # headers = {'Content-Length': '803890'}
 
-    response = requests.post('http://192.168.0.206/update', data=data, files=files).text
+    # response = requests.post('http://192.168.0.206/update', data=data, files=files).text
 
-    return response
+    # return response
 
     # if(response != "update success"):
     #     return "\nNo se pudo realizar la actualizacion"
