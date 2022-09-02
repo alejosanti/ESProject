@@ -186,7 +186,7 @@ def upload_to_ESP():
 
     binario = open(path, "rb")
     
-    # files = {'firmware': binario}
+    files = {'firmware': binario}
     
     # binarySize = os.path.getsize(path)
     # print("El tamaño del binario es: " + str(binarySize))
@@ -196,9 +196,9 @@ def upload_to_ESP():
 
     data = {'filename': 'firmware', 'name': 'firmware', 'md5': md5} 
 
-    upldfiledict = {"file": (r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
+    # upldfiledict = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
 
-    post_resp = requests.post("http://192.168.0.206/update", data=data, files=upldfiledict)
+    post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
     print(post_resp.text)
 
