@@ -194,7 +194,7 @@ def upload_to_ESP():
     md5 = hashlib.md5(binario.read()).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
-    data = {'filename': 'firmware', 'name': 'firmware', 'md5': md5} 
+    data = {'filename': 'firmware', 'name': 'firmware', 'MD5': md5} 
 
     binario.close()
 
