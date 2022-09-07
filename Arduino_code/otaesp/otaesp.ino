@@ -44,6 +44,10 @@ void setup(void) {
     request->send(200, "text/html", s);
   });
 
+  server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Response from a generic test");
+  });
+
   AsyncElegantOTA.begin(&server);    // Start AsyncElegantOTA
   server.begin();
   Serial.println("HTTP server started");

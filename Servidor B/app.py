@@ -43,7 +43,7 @@ def atender_webhook():
 
     # Cargando binario al ESP
     estado = upload_to_ESP()
-    # print("\nEstado del update al ESP:" + estado)
+    print("\nEstado del update al ESP:" + estado)
     return json.dumps({'state':estado}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
@@ -203,43 +203,6 @@ def upload_to_ESP():
     post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
     print(post_resp.text)
-
-    
-
-    # {'Content-Length': str(binarySize)}
-    # headers = { 'Accept': '*/*',
-    #             'Content-Length': '803890',
-    #             'Content-Type': 'multipart/form-data;  boundary=----WebKitFormBoundaryiO4Rhc6PAkJ684w3',
-    #             'Cookie': 'visited=1',
-    #             'Sec-GPC': '1',
-    #             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36'}
-    
-    # headers = {'Content-Length': str(binarySize)}
-    # headers = {'Content-Length': '803890'}
-
-    # response = requests.post('http://192.168.0.206/update', data=data, files=files).text
-
-    # return response
-
-    # if(response != "update success"):
-    #     return "\nNo se pudo realizar la actualizacion"
-    # else:     
-    #     for i in range(0, 5):  # try 5 times
-    #         try:
-    #             print("Consultando version...   (intento " + i + " de 5)")
-    #             version = requests.get('http://192.168.4.1/version').text
-    #         except Exception:
-    #             pass
-
-    #         if version is None:
-    #             time.sleep(2)  # wait for 2 seconds before trying to fetch the data again
-    #         else:
-    #             break
-    #     if  version is None:
-    #         return "\nNo se pudo obtener la version del ESP"
-    #     else:
-    #         mongo.db.ota_transactions.insert_one({'date': datetime.datetime.now().strftime("%b %d %Y %H:%M:%S"), 'user': username, 'filename': binario.filename, 'version': version}) 
-    #         return "\nActualizacion completa"
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
