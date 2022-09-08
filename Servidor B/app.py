@@ -44,7 +44,7 @@ def atender_webhook():
     estado = upload_to_ESP()
     
     # Testeando
-    if(estado == "Ok"):
+    if(estado == "OK"):
         test_new_firmware()
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
