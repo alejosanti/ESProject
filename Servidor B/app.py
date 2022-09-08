@@ -161,11 +161,13 @@ def upload_to_ESP():
 
     files = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
 
+    print("\nSubiendo binario al ESP")
     post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
     print(post_resp.text)
 
 def test_new_firmware():
+    global estado_test
     estado_test = test.main_test()
 
 def allowed_file(filename):
