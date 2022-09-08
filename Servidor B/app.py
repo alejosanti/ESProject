@@ -45,6 +45,7 @@ def atender_webhook():
         upload_to_ESP()
     
         # Testeando
+        print("\nComenzando el testeo: ")
         test_new_firmware()
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
@@ -161,7 +162,7 @@ def upload_to_ESP():
 
     files = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
 
-    print("\nSubiendo binario al ESP")
+    print("\nSubiendo binario al ESP:")
     post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
     print(post_resp.text)
