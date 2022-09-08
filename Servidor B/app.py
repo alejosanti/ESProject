@@ -43,6 +43,8 @@ def atender_webhook():
     # Cargando binario al ESP
     estado = upload_to_ESP()
     
+    print("\nEstado: " + estado)
+
     # Testeando
     if(estado == "ok"):
         test_new_firmware()
