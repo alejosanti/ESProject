@@ -40,22 +40,20 @@ def atender_webhook():
     # Creando binario
     create_binary_file()
 
-    # Cargando binario al ESP
-    estado = upload_to_ESP()
+    try:
+        # Cargando binario al ESP
+        upload_to_ESP()
     
-    print("\nEstado: " + estado)
-
-    # Testeando
-    if(estado == "ok"):
+        # Testeando
         test_new_firmware()
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
         else:
             estado = "Test fallido"
         print("\n" + estado)
-
-
-    return json.dumps({'state':estado}), 200, {'ContentType':'application/json'} 
+        return json.dumps({'state':'Ok'}), 200, {'ContentType':'application/json'} 
+    except:
+        return json.dumps({'state':'Fail'}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
     headers = {}

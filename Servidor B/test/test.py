@@ -20,6 +20,7 @@ def main_test():
     test_version()
     test_test()
     print("\nTest finalizado correctamente")
+    return "Everything is ok"
 
 if __name__ == '__main__':
     main_test()
