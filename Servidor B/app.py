@@ -8,6 +8,7 @@ import base64
 import requests
 import os
 import hashlib
+from test import test
 
 UPLOAD_FOLDER = 'static/uploads/'
 ALLOWED_EXTENSIONS = set(['bin'])
@@ -24,6 +25,7 @@ username = 'alejosanti'
 repository_name = 'ESProject'
 file_path = ''
 placa = "esp32:esp32:nodemcu-32s"
+estado_test = 'Sin realizar'
 
 @app.route('/github-webhook', methods=["POST"])
 def atender_webhook():
@@ -38,12 +40,19 @@ def atender_webhook():
     # Creando binario
     create_binary_file()
 
-    # Subiendo binario a GitHub
-    # upload_binary_file()
-
     # Cargando binario al ESP
     estado = upload_to_ESP()
-    # print("\nEstado del update al ESP:" + estado)
+    
+    # Testeando
+    if(estado == "Ok"):
+        test_new_firmware()
+        if(estado_test == "Everything is ok"):
+            estado = "Test correcto"
+        else:
+            estado = "Test fallido"
+        print("\n" + estado)
+
+
     return json.dumps({'state':estado}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
@@ -127,54 +136,6 @@ def create_binary_file():
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
-"""
-def upload_binary_file():
-        # Datos necesarios para subir a GitHub:
-        #     En la ruta: 
-        #         -owner --> username
-        #         -repo --> repository_name
-        #         -path --> gitPath
-        #     En el encabezado:
-        #         -Authorization --> github_token
-        #     En el cuerpo:
-        #         -message --> mensaje de commit
-        #         -content --> contenido del binario en base64
-        #         -sha --> codigo sha del archivo a reemplazar (se obtiene en https://api.github.com/repos/alejosanti/ESProject/contents/Binaries/otaesp.ino.bin)
-
-    # Datos del header
-    headers = {}
-    if os.environ.get('github_token'):
-        headers['Authorization'] = f"token {github_token}"
-        headers['Content-Type'] = "application/json"
-    
-    # Datos de la ruta
-    gitPath = "Binaries/otaesp.ino.bin"
-
-    url = f'https://api.github.com/repos/{username}/{repository_name}/contents/{gitPath}'
-
-    # Datos del cuerpo
-    cwd =  os.getcwd()
-    path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
-    path = path.replace("/", os.sep)
-    print("\nBuscando binario en:  " + path)
-    
-    
-    binario = open(path, "rb").read()
-    content = base64.b64encode(binario)
-        
-    # Buscando sha del archivo binario     
-    binary_sha = requests.get(url, headers=headers).json()['sha']
-
-    data = {"message":"Automatic upload of the binary file from Server B", "content":str(content.decode("UTF-8")), "sha":binary_sha}
-
-    # Realizando el PUT para subir el binario
-    print('\nSubiendo binario a GitHub...\n')
-    r = requests.put(url, json=data, headers=headers)
-
-    print("\n Estado del update: ")
-    print(r.raise_for_status() if r.raise_for_status() == None else r.status_code)
-"""
-
 def upload_to_ESP():
     print("\nCargando binario al ESP...")
 
@@ -203,6 +164,9 @@ def upload_to_ESP():
     post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
     print(post_resp.text)
+
+def test_new_firmware():
+    estado_test = test.main_test()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
