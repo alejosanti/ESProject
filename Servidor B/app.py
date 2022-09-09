@@ -1,8 +1,6 @@
-import datetime
 import json
-import re
 import time
-from flask import Flask, render_template
+from flask import Flask
 from flask_pymongo import PyMongo
 import requests, os
 import base64
@@ -163,17 +161,13 @@ def upload_to_ESP():
     print("\nSubiendo binario al ESP:")
     post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
 
+    time.sleep(5) # Pequeña pausa para esperar que el ESP cargue el binario
+
     print(post_resp.text)
 
 def test_new_firmware():
-    # global estado_test
-    # estado_test = test.main_test()
-
-    response = requests.get("http://192.168.0.206/version")
-    response.raise_for_status()
-    expresion = re.compile('v[\\d].[\\d].[\\d]') # Expresion regular para que la version tenga el formato v.digitos.digitos.digitos
-    version = response.text
-    print("\nVersion obtenida en el testeo: " + version)
+    global estado_test
+    estado_test = test.main_test()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
