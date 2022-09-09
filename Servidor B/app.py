@@ -43,6 +43,7 @@ def atender_webhook():
 
     try:
         # Cargando binario al ESP de desarrollo
+        print("\nSubiendo al ESP de testeo...")
         upload_to_ESP(ipDesarrollo)
         # Testeando
         print("\nComenzando el testeo: ")
@@ -50,7 +51,7 @@ def atender_webhook():
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
             # Cargando binario al ESP de produccion
-            print("\nSubiendo a produccion:")
+            print("\nSubiendo a produccion...")
             upload_to_ESP(ipProduccion)
         else:
             estado = "Test fallido"
