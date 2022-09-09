@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 import time
 from flask import Flask, render_template
 from flask_pymongo import PyMongo
@@ -53,7 +54,9 @@ def atender_webhook():
             estado = "Test fallido"
         print("\n" + estado)
         return json.dumps({'state':'Ok'}), 200, {'ContentType':'application/json'} 
-    except:
+    except Exception as e:
+        print(e)
+        print("\nHubo un problema")
         return json.dumps({'state':'Fail'}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
@@ -148,11 +151,6 @@ def upload_to_ESP():
 
     binario = open(path, "rb")
     
-    # files = {'firmware': binario}
-    
-    # binarySize = os.path.getsize(path)
-    # print("El tamaño del binario es: " + str(binarySize))
-
     md5 = hashlib.md5(binario.read()).hexdigest()
     print("\nHash MD5 del binario: " + md5)
 
@@ -168,8 +166,14 @@ def upload_to_ESP():
     print(post_resp.text)
 
 def test_new_firmware():
-    global estado_test
-    estado_test = test.main_test()
+    # global estado_test
+    # estado_test = test.main_test()
+
+    response = requests.get("http://192.168.0.206/version")
+    response.raise_for_status()
+    expresion = re.compile('v[\\d].[\\d].[\\d]') # Expresion regular para que la version tenga el formato v.digitos.digitos.digitos
+    version = response.text
+    print("\nVersion obtenida en el testeo: " + version)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

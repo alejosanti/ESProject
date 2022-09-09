@@ -3,6 +3,7 @@ import re
 
 def test_version():
    response = requests.get("http://192.168.0.206/version")
+   response.raise_for_status()
    expresion = re.compile('v[\\d].[\\d].[\\d]') # Expresion regular para que la version tenga el formato v.digitos.digitos.digitos
    version = response.text
    print("\nVersion obtenida en el testeo: " + version)
