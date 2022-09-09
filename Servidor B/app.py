@@ -25,6 +25,8 @@ repository_name = 'ESProject'
 file_path = ''
 placa = "esp32:esp32:nodemcu-32s"
 estado_test = 'Sin realizar'
+ipDesarrollo = '192.168.0.206'
+ipProduccion = '192.168.0.151'
 
 @app.route('/github-webhook', methods=["POST"])
 def atender_webhook():
@@ -40,22 +42,26 @@ def atender_webhook():
     create_binary_file()
 
     try:
-        # Cargando binario al ESP
-        upload_to_ESP()
-    
+        # Cargando binario al ESP de desarrollo
+        upload_to_ESP(ipDesarrollo)
         # Testeando
         print("\nComenzando el testeo: ")
         test_new_firmware()
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
+            # Cargando binario al ESP de produccion
+            print("\nSubiendo a produccion:")
+            upload_to_ESP(ipProduccion)
         else:
             estado = "Test fallido"
             print("\n" + estado)
+            return json.dumps({'state':'Test fallido'}), 200, {'ContentType':'application/json'} 
+            
         return json.dumps({'state':'Ok'}), 200, {'ContentType':'application/json'} 
     except Exception as e:
         print(e)
         print("\nHubo un problema subiendo o testeando el firmware")
-        return json.dumps({'state':'Fail'}), 200, {'ContentType':'application/json'} 
+        return json.dumps({'state':'Error'}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
     headers = {}
@@ -138,7 +144,7 @@ def create_binary_file():
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
-def upload_to_ESP():
+def upload_to_ESP(ip):
     print("\nCargando binario al ESP...")
 
     # Para cargar el binario hay que hacer un POST con el binario y con su hash MD5
@@ -159,7 +165,7 @@ def upload_to_ESP():
     files = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
 
     print("\nSubiendo binario al ESP:")
-    post_resp = requests.post("http://192.168.0.206/update", data=data, files=files)
+    post_resp = requests.post("http://" + ip + "/update", data=data, files=files)
 
     time.sleep(5) # Pequeña pausa para esperar que el ESP cargue el binario
 
