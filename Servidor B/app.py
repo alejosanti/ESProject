@@ -56,7 +56,7 @@ def atender_webhook():
             estado = "Test fallido"
             print("\n" + estado)
             return json.dumps({'state':'Test fallido'}), 200, {'ContentType':'application/json'} 
-            
+
         return json.dumps({'state':'Ok'}), 200, {'ContentType':'application/json'} 
     except Exception as e:
         print(e)
@@ -145,8 +145,6 @@ def create_binary_file():
         print(e)
 
 def upload_to_ESP(ip):
-    print("\nCargando binario al ESP...")
-
     # Para cargar el binario hay que hacer un POST con el binario y con su hash MD5
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
@@ -164,7 +162,7 @@ def upload_to_ESP(ip):
 
     files = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Servidor B/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
 
-    print("\nSubiendo binario al ESP:")
+    print("\nSubiendo binario al ESP...")
     post_resp = requests.post("http://" + ip + "/update", data=data, files=files)
 
     time.sleep(5) # Pequeña pausa para esperar que el ESP cargue el binario
