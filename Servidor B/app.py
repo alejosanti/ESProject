@@ -50,11 +50,11 @@ def atender_webhook():
             estado = "Test correcto"
         else:
             estado = "Test fallido"
-        print("\n" + estado)
+            print("\n" + estado)
         return json.dumps({'state':'Ok'}), 200, {'ContentType':'application/json'} 
     except Exception as e:
         print(e)
-        print("\nHubo un problema")
+        print("\nHubo un problema subiendo o testeando el firmware")
         return json.dumps({'state':'Fail'}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
