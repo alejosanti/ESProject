@@ -1,7 +1,6 @@
 import json
 import time
 from flask import Flask
-from flask_pymongo import PyMongo
 import requests, os
 import base64
 import requests
@@ -9,15 +8,7 @@ import os
 import hashlib
 from test import test
 
-UPLOAD_FOLDER = 'static/uploads/'
-ALLOWED_EXTENSIONS = set(['bin'])
-
-
 app = Flask(__name__)
-app.secret_key = "otawebapp"
-app.config['MONGO_URI']='mongodb://localhost:27017/otadata'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-mongo = PyMongo(app)
 
 github_token = os.environ.get('github_token')
 username = 'alejosanti'
@@ -30,27 +21,30 @@ ipProduccion = '192.168.0.151'
 
 @app.route('/github-webhook', methods=["POST"])
 def atender_webhook():
+    """
+    Atiende los webhook que realiza git al subir código al repositorio
+    """
+
     print("\nLlego un github webhook\n")
 
     # Leyendo archivos de GitHub
     files = github_read_file()
     
-    # Escribiendo archivos localmente
+    # Copiando los archivos localmente
     write_files_localy(files)
     
-    # Creando binario
+    # Creando binario 
     create_binary_file()
 
     try:
-        # Cargando binario al ESP de desarrollo
         print("\nSubiendo al ESP de testeo...")
         upload_to_ESP(ipDesarrollo)
-        # Testeando
+
         print("\nComenzando el testeo: ")
         test_new_firmware()
+
         if(estado_test == "Everything is ok"):
             estado = "Test correcto"
-            # Cargando binario al ESP de produccion
             print("\nSubiendo a produccion...")
             upload_to_ESP(ipProduccion)
         else:
@@ -65,22 +59,26 @@ def atender_webhook():
         return json.dumps({'state':'Error'}), 200, {'ContentType':'application/json'} 
     
 def github_read_file():
+    """
+    Guarda en un json los archivos del ESP (como el .ino o cualquier .h) y su información, los que están contenidos en el directorio "Arduino_code"
+    """
+
     headers = {}
     if github_token:
         headers['Authorization'] = f"token {github_token}"
     
-    # Obteniendo el sha del directorio
+    # Obteniendo el código sha del directorio (necesario para pedir los archivos que contiene)
     url = f'https://api.github.com/repos/{username}/{repository_name}/contents'
     root = requests.get(url, headers=headers).json()
     tree_sha = list(filter(lambda file: file['path'] == "Arduino_code" , root))[0]['sha']
 
+    # Pidiendo listado de archivos
     url = f'https://api.github.com/repos/{username}/{repository_name}/git/trees/{tree_sha}?recursive=1'
-
     r = requests.get(url, headers=headers)
     r.raise_for_status()
     data = r.json()
 
-    # Agregando el contenido real de los archivos
+    # Pidiendo el contenido de los archivos
     for file in data['tree']:
         if file['type'] == 'blob': # blob son los archivos con contenido (no directorios)
             print("\nObteniendo archivo: " + file['path'])
@@ -95,6 +93,10 @@ def github_read_file():
     return data['tree']
 
 def write_files_localy(files):
+    """
+    A partir de un json con la información de archivos, los escribe localmente en el directorio "CodeFromGithub"
+    """
+
     for file in files:
         if file['type'] == 'blob':
             # Decodificando contenido
@@ -125,27 +127,23 @@ def write_files_localy(files):
             fileWriter.close()
 
 def create_binary_file():
+    """
+    Compila el binario con ArduinoCLI
+    """
+
     try:
         print("\nEmpezando compilacion del ino")
         os.system("arduino-cli compile -b " + placa + " ./CodeFromGithub/otaesp/otaesp.ino -e  --clean")
         print("\nCompilacion del ino finalizada")
-
-        # Guardando archivo en un lugar alcanzable por el ESP
-        cwd =  os.getcwd()
-        path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
-        path = path.replace("/", os.sep)
-        binario_content = open(path, "rb").read()
-
-        newBinPath = os.path.join(app.config['UPLOAD_FOLDER'], 'firmware.bin')
-        newBinFile = open(newBinPath, "wb")
-        newBinFile.write(binario_content)
-        print("\nBinario guardado...")
-
     except Exception as e:
         print("\n\n\n\n\n Ocurrió una excepción: \n")
         print(e)
 
 def upload_to_ESP(ip):
+    """
+    Usando AsyncElegantOTA, sube mediante OTA el binario al ESP indicado en la ip
+    """
+
     # Para cargar el binario hay que hacer un POST con el binario y con su hash MD5
     cwd =  os.getcwd()
     path = cwd + "/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin"
@@ -171,11 +169,12 @@ def upload_to_ESP(ip):
     print(post_resp.text)
 
 def test_new_firmware():
+    """
+    Llama a la función main_test() del archivo test.py
+    """
+
     global estado_test
     estado_test = test.main_test()
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
     app.run(host='192.168.0.121', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
