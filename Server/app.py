@@ -161,7 +161,7 @@ def upload_to_ESP(ip):
 
     binario.close()
 
-    files = {"file": open(r"C:/Users/Ale/OneDrive/Escritorio/Facultad/Tesis/PD/ESPCI/ESProject/Server/CodeFromGithub/otaesp/build/esp32.esp32.nodemcu-32s/otaesp.ino.bin", "rb")}
+    files = {"file": open(path, "rb")}
 
     print("\nSubiendo binario al ESP...")
     post_resp = requests.post("http://" + ip + "/update", data=data, files=files)
