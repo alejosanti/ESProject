@@ -2,9 +2,12 @@ import requests
 import re
 
 def test_version():
+   """
+   Testea que la version tenga el formato v.digitos.digitos.digitos
+   """
    response = requests.get("http://192.168.0.206/version")
    response.raise_for_status()
-   expresion = re.compile('v[\\d].[\\d].[\\d]') # Expresion regular para que la version tenga el formato v.digitos.digitos.digitos
+   expresion = re.compile('v[\\d].[\\d].[\\d]') # Expresion regular 
    version = response.text
    print("\nVersion obtenida en el testeo: " + version)
 
@@ -12,6 +15,9 @@ def test_version():
    assert expresion.match(version) is not None, "La expresion regular no coincide"
 
 def test_test():
+   """
+   Testea la respuesta de /test
+   """
    response = requests.get("http://192.168.0.206/test")
 
    assert response.status_code == 200, "Wrong status code"

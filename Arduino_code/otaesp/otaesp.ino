@@ -1,6 +1,5 @@
  /*
-  Important Notice: Star the repository on Github if you like the library! :)
-  Repository Link: https://github.com/ayushsharma82/AsyncElegantOTA
+  Servidor web básico que muestra el html escrito en index.h. El ESP hace uso de AsyncElegantOTA para los updates, y se conecta a la red WiFi indicada.
 */
 
 
