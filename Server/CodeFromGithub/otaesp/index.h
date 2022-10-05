@@ -11,7 +11,7 @@ const char MAIN_page[] PROGMEM = R"=====(
             nombre: nombre
         });
  
-        window.alert("Informacion guardada:" + jsonFormInfo);
+        window.alert("Informacion guardadaaaa:" + jsonFormInfo);
          
     }
 </script>

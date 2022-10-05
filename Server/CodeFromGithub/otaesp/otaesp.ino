@@ -1,6 +1,5 @@
  /*
-  Important Notice: Star the repository on Github if you like the library! :)
-  Repository Link: https://github.com/ayushsharma82/AsyncElegantOTA
+  Servidor web básico que muestra el html escrito en index.h. El ESP hace uso de AsyncElegantOTA para los updates, y se conecta a la red WiFi indicada.
 */
 
 
@@ -11,7 +10,7 @@
 
 #include "index.h"
 
-const char* version = "v3.0.7";
+const char* version = "v3.0.8";
 const char* ssid = "Fibertel WiFi250 2.4GHz";
 const char* password = "00442301230";
 
