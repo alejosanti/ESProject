@@ -80,7 +80,7 @@ def github_read_file():
     r.raise_for_status()
     data = r.json()
 
-    # Agregando el contenido real de los archivos y su codificacion
+    # Agregando el contenido real de los archivos
     for file in data['tree']:
         if file['type'] == 'blob': # blob son los archivos con contenido (no directorios)
             print("\nObteniendo archivo: " + file['path'])
@@ -178,5 +178,5 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
-    app.run(host='192.168.0.3', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
+    app.run(host='192.168.0.121', port=16000, debug=True) #La IP declarada es la local, se declara asi y no como 'localhost' porque el ESP no la detecta para hacer el update.
     github_token = os.environ.get('GITHUB_TOKEN') 

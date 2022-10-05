@@ -11,7 +11,7 @@
 
 #include "index.h"
 
-const char* version = "v3.0.3";
+const char* version = "v3.0.4";
 const char* ssid = "Fibertel WiFi250 2.4GHz";
 const char* password = "00442301230";
 
