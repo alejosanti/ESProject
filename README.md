@@ -1,7 +1,12 @@
 # ESProject
+Este sistema integra las prácticas de CI/CD en proyectos con microcontroladores
+
+## Requerimientos
 instalar python
+
 instalar mongo
 
+Dentro del repositorio
 pip install -r requirements.txt
 
 SET github_token=tokendegithub
