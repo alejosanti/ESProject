@@ -5,7 +5,8 @@ Si se configura correctamente, el servidor debe ser capaz de encargarse del proc
 
 ## Requerimientos
 - Python: se requiere instalar python para ejecutar el servidor.
-- Más de 1 microcontrolador: el sistema, de base, viene preparado para trabajar con 2 microcontroladores. Uno sobre el que va a hacer el testing, y otro, considerado de producción, en donde va a subir el binario ya testeado. Aclaración: por defecto, se asume que los microcontroladores corresponden al ESP32, pero también se puede personalizar. ![image](https://user-images.githubusercontent.com/50599731/204010080-38ca1da6-49f8-4647-b46e-f8f41e7c74ab.png)
+- Más de 1 microcontrolador: el sistema, de base, viene preparado para trabajar con 2 microcontroladores. Uno sobre el que va a hacer el testing, y otro, considerado de producción, en donde va a subir el binario ya testeado. Aclaración: por defecto, se asume que los microcontroladores corresponden al ESP32, pero también se puede personalizar.
+![image](https://user-images.githubusercontent.com/50599731/204010080-38ca1da6-49f8-4647-b46e-f8f41e7c74ab.png)
 - Conexión WiFi (o similares): como el método de actualización de los dispositivos es mediante OTA, es necesario que los mismos puedan comunicarse con el servidor mediante alguna red. La más común es una red WiFi WLAN, pero se pueden combinar con las redes móviles u otras alternativas. Además, el servidor debe tener la posibilidad de comunicarse con GitHub, por lo que necesita acceso a Internet.
 - ArduinoIDE: como se detallará en la próxima sección, se deben subir a los microcontroladores una primera versión del programa que habilite el uso de OTA, por lo que se recomienda hacerlo con el IDE de Arduino mediante cable, pero se puede usar una manera alternativa si lo considera adecuado.
 - ArduinoCLI: para realizar parte del proceso de build, se va a utilizar la línea de comandos de Arduino, ArduinoCLI.
@@ -15,10 +16,8 @@ Si se configura correctamente, el servidor debe ser capaz de encargarse del proc
 Como se nombró anteriormente, por default, este sistema trabaja con 2 microcontroladores ESP32. Antes de comenzar con el resto de configuraciones, primero se debe subir a los microcontroladores un código capaz de soportar las actualizaciones OTA. Se recomienda hacerlo con el IDE de Arduino. Para ello se debe abrir, con este IDE, el archivo "otaesp.ino", contenido en el directorio "Arduino_code/otaesp". Una vez abierto el archivo, teniendo conectado el ESP mediante cable, se debe presiona el botón "Subir" en la parte superior del IDE, y con ello comenzará el proceso de actualización (recordar configurar correctamente el ESP en Arduino, en la sección de errores hay una breve explicación de como realizarlo). Cuando finalice la actualización, podrá ver el servidor web cargado en el ESP en funcionamiento, accediendo a los endpoints que tiene disponible ("/" y "/version"). Repetir el proceso con el segundo microcontrolador. Recordar que es necesario configurar ArduinoIDE para que reconozca el ESP32. Acá una guia de Espressif, el diseñador de estos microcontroladores: https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
 
 Comentar que, al subir el código "otaesp.ino" a los microcontroladores, se les asigna automáticamente una IP a cada uno. Esta IP se puede ver monitoreando su salida con la opción "Monitor Serie" de Arduino. Es importante que las IP de los microcontroladores coincidan con las que están indicadas en las variables del servidor:
+
 ![image](https://user-images.githubusercontent.com/50599731/204021239-fe21ea9e-78c3-4488-9e91-d03812044e46.png)
-
-
-, la cual utilizará el servidor para comunicarse con ellos. Si, por algún motivo, esta ip genera problemas, se puede cambiar fácilmente desde 
 
 ### Configurando servidor
 Finalizada la configuración de los ESP, se debe configurar el servidor. Como ya se comentó, se debe tener instalado Python (https://www.python.org/downloads). El proyecto tiene 3 dependiencias, la librería "bcrypt", "flask" y "requests". Se las puede instalar de manera tradicional o, como es usual, hacer uso de pip, escribiendo en consola el siguiente comando:
@@ -31,7 +30,9 @@ Con las dependencias instaladas, ya se debería poder ejecutar el servidor. Para
 python app.py
 ```
 Debería observar el siguiente mensaje en consola, advirtiendo que el servidor está en funcionamiento:
+
 ![image](https://user-images.githubusercontent.com/50599731/204010672-59b5e26c-df84-4fbd-be89-a4ef3f3d78bf.png)
+
 Como se puede observar, técnicamente es un servidor web desarrollado sobre Flask.
 
 Sin embargo, esto no significa que el sistema está listo para su uso, todavía tenemos que configurar 2 cosas más.
@@ -48,9 +49,11 @@ El primer comando actualiza la lista con las placas que soporta, y el segundo le
 arduino-cli board list --timeout 10s
 ```
 Además, se debe incluir el tipo de placa dentro de las variables globales del servidor. En el caso del ESP32:
+
 ![image](https://user-images.githubusercontent.com/50599731/204021446-6a80bf95-1b43-440f-bf9d-dc19f183b36f.png)
 
 Porque se utilizará posteriormente en el comando que compila el código y crea el archivo binario:
+
 ![image](https://user-images.githubusercontent.com/50599731/204021553-e92a5589-d46c-4e6c-b56f-29fba5621fcc.png)
 
 ### Configurando integración con GitHub
@@ -67,6 +70,7 @@ Una vez generado el token, por cuestiones de seguridad, no se incluye en el cód
 SET github_token=tokendegithub
 ```
 Por último, dentro de las variables globales del servidor, es necesario indicar el nombre de usuario de GitHub y el nombre del repositorio:
+
 ![image](https://user-images.githubusercontent.com/50599731/204021874-4e624167-6955-42a0-8f2b-ffb9997e18f9.png)
 
 Con todos estos pasos, ya debería poder utilizarse la API de GitHub. Quedaría pendiente la configuración de los Webhooks.
@@ -81,6 +85,7 @@ Para configurar un webhook es necesario:
 El webhook solicita la dirección URL con la que se debe comunicar ("payload URL") y permite elegir las condiciones a cumplir para enviar el pedido http. La dirección que se le debe proveer es la siguiente: "http://" + dirección ip de la computadora sobre la que se esté ejecutando el servidor + ":" + puerto seleccionado para la aplicación + "/github-webhook". Por ejemplo: "http://1.1.1.1:16000/github-webhook"
 
 Para obtener la dirección ip de la computadora, en el caso de una computadora personal, se puede realizar de diferentes maneras. Una forma fácil es mediante páginas online, como https://www.cual-es-mi-ip.net/ (consultado el 11/11/2022). Para que la ip a la que envíe GitHub el webhook se corresponda con la del servidor, es necesario configurar un Port Forwarding, cuya configuración depende de cada proveedor de Internet. En el caso de Fibertel, se debe acceder el router y tiene una sección de Port Forwarding en donde se pueden asociar fácilmente la ip + puerto de la computadora, supongamos "1.1.1.1:16000", con la del servidor, "192.168.0.121:16000". La ip del servidor puede ser modificada en el propio código Python:
+
 ![image](https://user-images.githubusercontent.com/50599731/204017226-725ddf5e-e00c-4e3f-bef6-53eaa1ae9b72.png)
 
 
