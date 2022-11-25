@@ -12,7 +12,13 @@ Si se configura correctamente, el servidor debe ser capaz de encargarse del proc
 
 ## Configuración
 ### Configurando microcontroladores
-Como se nombró anteriormente, por default, este sistema trabaja con 2 microcontroladores ESP32. Antes de comenzar con el resto de configuraciones, primero se debe subir a los microcontroladores un código capaz de soportar las actualizaciones OTA. Se recomienda hacerlo con el IDE de Arduino. Para ello se debe abrir, con este IDE, el archivo "otaesp.ino", contenido en el directorio "Arduino_code/otaesp". Una vez abierto el archivo, teniendo conectado el ESP mediante cable, se debe presiona el botón "Subir" en la parte superior del IDE, y con ello comenzará el proceso de actualización. Cuando finalice la actualización, podrá ver el servidor web cargado en el ESP en funcionamiento, accediendo a los endpoints que tiene disponible ("/" y "/version"). Repetir el proceso con el segundo microcontrolador. Recordar que es necesario configurar ArduinoIDE para que reconozca el ESP32. Acá una guia de Espressif, el diseñador de estos microcontroladores: https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
+Como se nombró anteriormente, por default, este sistema trabaja con 2 microcontroladores ESP32. Antes de comenzar con el resto de configuraciones, primero se debe subir a los microcontroladores un código capaz de soportar las actualizaciones OTA. Se recomienda hacerlo con el IDE de Arduino. Para ello se debe abrir, con este IDE, el archivo "otaesp.ino", contenido en el directorio "Arduino_code/otaesp". Una vez abierto el archivo, teniendo conectado el ESP mediante cable, se debe presiona el botón "Subir" en la parte superior del IDE, y con ello comenzará el proceso de actualización (recordar configurar correctamente el ESP en Arduino, en la sección de errores hay una breve explicación de como realizarlo). Cuando finalice la actualización, podrá ver el servidor web cargado en el ESP en funcionamiento, accediendo a los endpoints que tiene disponible ("/" y "/version"). Repetir el proceso con el segundo microcontrolador. Recordar que es necesario configurar ArduinoIDE para que reconozca el ESP32. Acá una guia de Espressif, el diseñador de estos microcontroladores: https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
+
+Comentar que, al subir el código "otaesp.ino" a los microcontroladores, se les asigna automáticamente una IP a cada uno. Esta IP se puede ver monitoreando su salida con la opción "Monitor Serie" de Arduino. Es importante que las IP de los microcontroladores coincidan con las que están indicadas en las variables del servidor:
+![image](https://user-images.githubusercontent.com/50599731/204021239-fe21ea9e-78c3-4488-9e91-d03812044e46.png)
+
+
+, la cual utilizará el servidor para comunicarse con ellos. Si, por algún motivo, esta ip genera problemas, se puede cambiar fácilmente desde 
 
 ### Configurando servidor
 Finalizada la configuración de los ESP, se debe configurar el servidor. Como ya se comentó, se debe tener instalado Python (https://www.python.org/downloads). El proyecto tiene 3 dependiencias, la librería "bcrypt", "flask" y "requests". Se las puede instalar de manera tradicional o, como es usual, hacer uso de pip, escribiendo en consola el siguiente comando:
@@ -41,6 +47,12 @@ El primer comando actualiza la lista con las placas que soporta, y el segundo le
 ```
 arduino-cli board list --timeout 10s
 ```
+Además, se debe incluir el tipo de placa dentro de las variables globales del servidor. En el caso del ESP32:
+![image](https://user-images.githubusercontent.com/50599731/204021446-6a80bf95-1b43-440f-bf9d-dc19f183b36f.png)
+
+Porque se utilizará posteriormente en el comando que compila el código y crea el archivo binario:
+![image](https://user-images.githubusercontent.com/50599731/204021553-e92a5589-d46c-4e6c-b56f-29fba5621fcc.png)
+
 ### Configurando integración con GitHub
 Se va a hacer uso de 2 herramientas que provee GitHub, y deben ser configuradas correctamente.
 Primero, se va a configurar la API, que es la aplicación que se utilizará para obtener el nuevo código cada vez que el desarrollador suba una actualización al repositorio. Para ello, se debe crear un token personal, el cual se utilizará como autenticación a la hora de comunicarse con la API. Para crear el token, se debe seguir los siguientes pasos:
@@ -54,6 +66,9 @@ Una vez generado el token, por cuestiones de seguridad, no se incluye en el cód
 ```
 SET github_token=tokendegithub
 ```
+Por último, dentro de las variables globales del servidor, es necesario indicar el nombre de usuario de GitHub y el nombre del repositorio:
+![image](https://user-images.githubusercontent.com/50599731/204021874-4e624167-6955-42a0-8f2b-ffb9997e18f9.png)
+
 Con todos estos pasos, ya debería poder utilizarse la API de GitHub. Quedaría pendiente la configuración de los Webhooks.
 
 Cada vez que el desarrollador suba nuevo contenido al repositorio, GitHub enviará un webhook (pedido HTTP POST) al servidor, y sistema se encargará de subir la nueva versión al ESP de producción, creando una build y testeando el código. Por default, este mecanismo se activa con cualquier push en el respositorio, pero se puede configurar, por ejemplo, para que sea en una rama específica. Para ello, hay que configurar el webhook según la necesidad que se tenga.
@@ -69,16 +84,36 @@ Para obtener la dirección ip de la computadora, en el caso de una computadora p
 ![image](https://user-images.githubusercontent.com/50599731/204017226-725ddf5e-e00c-4e3f-bef6-53eaa1ae9b72.png)
 
 
-Instalar drivers
+## Posibles errores
+### Arduino no detecta el ESP32
+Recordar que para utilizar un microcontrolador en ArduinoIDE es necesario configurarlo.
+Al menos, en el caso del ESP32, hay que seguir algunos pasos. Primero es necesario incluir al ESP a las tarjetas de ArduinoIDE, para ello vamos a:
+- Archivo
+- Preferencias
+- En el campo "Gestor de URLs adicionales de tarjetas" agregamos el siguiente enlace: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+
+Luego se debe instalar la tarjeta, siguiendo las siguientes indicaciones:
+- Seleccionamos "Herramientas"
+- Placa
+- Gestor de tarjetas
+- En el buscador escribimos "ESP32"
+- Buscamos la creada por Espressif Systems y seleccionamos "instalar"
+
+Una vez instalada la placa, debemos seleccionarla:
+- Seleccionamos "Herramientas" nuevamente
+- Placa
+- Dentro del menú que se extiende, seleccionamos una que corresponda al ESP32, por ejemplo "ESP32 Dev Module".
+
+Para esta placa en particular, hay que setear la "Upload speed" en "115200". Lo cual se puede realizar yendo a:
+- Herramientas
+- Upload speed
+- Y en el menú desplegable seleccionar "115200"
+
+### Arduino no detecta los puertos del ESP32
+Para realizar las actualizaciones mediante cable, Arduino se comunica con los puertos identificados como "COMx" con x un número, generalmente del 1 al 10. En ciertas situaciones ocurre que hay puertos por los cuales no se puede realizar la actualización, problema que se soluciona cambiando de puerto, pero aquí viene el problema. Algunas veces pasa que Arduino solo reconoce 1 puerto, por lo que no se puede cambiar a otro para realizar la actualización. En mi propia experiencia, esto ocurre porque la computadora no detecta correctamente al ESP, lo cual se soluciona instalando los siguientes drivers:
 https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
-Explicar que puede haber un error con la api si no se pone bien la autenticación
 
-
-Hay que configurar las ip's de cada ESP, el de producción y el de desarrollo o testing. Ambas se muestran por el monitor cuando se carga el código por primera vez.
-
-Como ya se nombró, es necesario que GitHub notifique los cambios en el repositorio mediante los webhooks. Para configurar un webhook es necesario ir a “Settings” en el repositorio del proyecto, y dentro del menú desplegado a la izquierda, en la sección de “Code and automation”, aparece el botón que dice “Webhooks”. Al presionar esa opción, se listan los webhooks que tengamos configurados, en caso de no tener ninguno se puede presionar “Add webhook”, lo que abre una ventana que permite configurar uno nuevo. El webhook solicita la dirección URL a la que se debe comunicar y da la opción de configurar cuándo debe hacerlo, en el caso de este trabajo lo hará siempre que haya un push sobre el repositorio.
-
-En una computadora personal, si va a ser quien corra el módulo de control, primero es necesario obtener la dirección IP, lo cual se puede realizar de diferentes maneras, una forma es mediante páginas online, como https://www.cual-es-mi-ip.net/ (consultado el 11/11/2022). Una vez obtenida la IP, es necesario elegir el puerto al que se va a comunicar, supongamos el 16000. Esa dirección + puerto es lo que se le tiene que brindar al webhook que se configura en GitHub. Dependiendo del proveedor de internet, es probable que sea necesario acceder al router y habilitar el Port Forwarding, conectando la dirección que ingresamos en el webhook, que es a la que se comunica GitHub, con la que posee el módulo de control (se puede encontrar el su código). Por último, al menos en el sistema operativo Windows, lo más probable es que sea necesario crear una excepción en el Firewall, para que no se rechace el pedido de GitHub.
-
-
-
+### Cuota de uso de la API de GitHub alcanzado
+Se puede encontrar en la situación de que GitHub no le permita utilizar la API porque llegó al máximo de usos, los cuales se resetean al pasar de unas cuantas horas. Este problema no debería ocurrir, y generalmente el error reside en la autenticación. 
+Puede pasar que el servidor no haya podido leer correctamente la variable de entorno correspondiente al token del usuario. En ese caso, enviará los pedidos a la API pero sin autenticación, lo cual, si bien está permitido, tiene una cuota de uso relativamente baja. En un uso normal, no debería representar un problema, pero si se da un uso muy intensivo puede ocurrir que se alcance la cuota y se genere el error comentado previamente.
+Para solucionarlo, asegurarse de configurar correctamente, como está explicado anteriormente, la variable de entorno correspondiente al token de GitHub. Si el servidor lee la variable, hará los pedidos a la API con una autenticación correcta, lo que aumentará ampliamente la cuota de uso.
