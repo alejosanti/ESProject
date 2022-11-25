@@ -50,13 +50,29 @@ Primero, se va a configurar la API, que es la aplicación que se utilizará para
 - Una vez en la sección de tokens, presionar "Generate new token" y elegir "Generate new token (classic)".
 - Al generar el token, se puede configurar el alcance del mismo y el tiempo de expiración. Se recomienda dar acceso a los repositorios y los proyectos (tildar opción "repo" y "project").
 
+Una vez generado el token, por cuestiones de seguridad, no se incluye en el código del servidor, sino que este lo obtiene mediante las variables de entorno. En el caso de Windows, para setear una variable de entorno, con el valor del token, se utiliza el siguiente comando en la Powershell:
+```
+SET github_token=tokendegithub
+```
+Con todos estos pasos, ya debería poder utilizarse la API de GitHub. Quedaría pendiente la configuración de los Webhooks.
 
+Cada vez que el desarrollador suba nuevo contenido al repositorio, GitHub enviará un webhook (pedido HTTP POST) al servidor, y sistema se encargará de subir la nueva versión al ESP de producción, creando una build y testeando el código. Por default, este mecanismo se activa con cualquier push en el respositorio, pero se puede configurar, por ejemplo, para que sea en una rama específica. Para ello, hay que configurar el webhook según la necesidad que se tenga.
+Para configurar un webhook es necesario:
+- Ir a “Settings” dentro el repositorio del proyecto
+- Dentro del menú desplegado a la izquierda, en la sección de “Code and automation”.
+- Presional el botón que dice “Webhooks”. Al presionar esa opción, se listan los webhooks que tengamos configurados.
+- En caso de no tener ninguno se puede presionar “Add webhook”, lo que abre una ventana que permite configurar uno nuevo. 
+
+El webhook solicita la dirección URL con la que se debe comunicar ("payload URL") y permite elegir las condiciones a cumplir para enviar el pedido http. La dirección que se le debe proveer es la siguiente: "http://" + dirección ip de la computadora sobre la que se esté ejecutando el servidor + ":" + puerto seleccionado para la aplicación + "/github-webhook". Por ejemplo: "http://1.1.1.1:16000/github-webhook"
+
+Para obtener la dirección ip de la computadora, en el caso de una computadora personal, se puede realizar de diferentes maneras. Una forma fácil es mediante páginas online, como https://www.cual-es-mi-ip.net/ (consultado el 11/11/2022). Para que la ip a la que envíe GitHub el webhook se corresponda con la del servidor, es necesario configurar un Port Forwarding, cuya configuración depende de cada proveedor de Internet. En el caso de Fibertel, se debe acceder el router y tiene una sección de Port Forwarding en donde se pueden asociar fácilmente la ip + puerto de la computadora, supongamos "1.1.1.1:16000", con la del servidor, "192.168.0.121:16000". La ip del servidor puede ser modificada en el propio código Python:
+![image](https://user-images.githubusercontent.com/50599731/204017226-725ddf5e-e00c-4e3f-bef6-53eaa1ae9b72.png)
 
 
 Instalar drivers
 https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
+Explicar que puede haber un error con la api si no se pone bien la autenticación
 
-SET github_token=tokendegithub
 
 Hay que configurar las ip's de cada ESP, el de producción y el de desarrollo o testing. Ambas se muestran por el monitor cuando se carga el código por primera vez.
 
