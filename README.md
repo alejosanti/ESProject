@@ -1,5 +1,5 @@
 # CI/CD en proyectos con microcontroladores
-Este sistema es el resultado de mi tesis para la Licenciatura de Informática, UNLP. Hecho bajo la supervisión del director Tinetti, Fernando G.
+Este sistema es el resultado de mi tesis de Licenciatura de Informática, Facultad de Informática, UNLP. Hecho bajo la supervisión del director Tinetti, Fernando G.
 En resumen, consiste en un servidor Python, el cual se va a encargar de comunicarse con diferentes agentes para intentar automatizar diferentes partes del desarrollo.
 Si se configura correctamente, el servidor debe ser capaz de encargarse del proceso de build (compilación del código y creación del binario), test y deploy. El trigger de este proceso automatizado, a priori, es un push sobre el repositorio, pero se puede personalizar.
 
