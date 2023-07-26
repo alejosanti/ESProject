@@ -92,7 +92,7 @@ Para obtener la dirección IP de la computadora, en el caso de una computadora p
 ![image](https://user-images.githubusercontent.com/50599731/204017226-725ddf5e-e00c-4e3f-bef6-53eaa1ae9b72.png)
 
 
-## Errores
+## Errores comunes y sus soluciones...
 ### Arduino no detecta el ESP32
 Recordar que para utilizar un microcontrolador en ArduinoIDE es necesario configurarlo. Al menos en el caso del ESP32, hay que seguir los pasos descritos a continuación.
 Primero es necesario incluir al ESP a las tarjetas de ArduinoIDE, para ello vamos a:
